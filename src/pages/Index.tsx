@@ -1,12 +1,42 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import IssueFeed from "@/components/feed/IssueFeed";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 const Index = () => {
+  // Check if user is authenticated
+  const isAuthenticated = localStorage.getItem("auth") !== null;
+  
+  // If not authenticated, redirect to login
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.href = "/login";
+    }
+  }, [isAuthenticated]);
+  
+  if (!isAuthenticated) {
+    return null;
+  }
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Community Feed</h1>
+          <p className="text-muted-foreground">
+            Stay updated with issues in your area
+          </p>
+        </div>
+        
+        <Button onClick={() => window.location.href = "/report"}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Report Issue
+        </Button>
       </div>
+      
+      <IssueFeed />
     </div>
   );
 };
