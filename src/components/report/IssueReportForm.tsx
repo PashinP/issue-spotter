@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -21,9 +20,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import {
-  Road, Trash2, Construction, LightbulbOff, Plus, 
+  MapIcon, Trash2, Construction, LightbulbOff, Plus, 
   Check, Upload, Camera, Map, Building, LoaderCircle,
-  Government, ArrowLeft, ArrowRight, Image
+  Building2, ArrowLeft, ArrowRight, Image
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +39,7 @@ const PROBLEM_TYPES = [
   { 
     id: "pothole", 
     name: "Potholes in my area", 
-    icon: Road,
+    icon: MapIcon,
     description: "Report potholes or damaged roads that need repair"
   },
   { 
@@ -111,7 +110,6 @@ const IssueReportForm = () => {
     const newImages = [...formData.images];
     const newPreviewUrls = [...formData.previewUrls];
     
-    // Revoke the object URL to prevent memory leaks
     URL.revokeObjectURL(newPreviewUrls[index]);
     
     newImages.splice(index, 1);
@@ -175,13 +173,11 @@ const IssueReportForm = () => {
   const submitComplaint = () => {
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       setStep("success");
       setProgress(100);
       
-      // Store complaint in localStorage
       const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
       complaints.push({
         id: Date.now().toString(),
@@ -196,7 +192,7 @@ const IssueReportForm = () => {
         comments: 0,
         createdAt: new Date().toISOString(),
         user: {
-          name: "John Smith", // Would come from auth in real app
+          name: "John Smith",
           constituency: formData.constituency
         },
         hasImage: formData.previewUrls.length > 0
@@ -261,7 +257,7 @@ const IssueReportForm = () => {
                       <CardHeader className="p-4 pb-2">
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-sm flex items-center">
-                            <Government className="h-4 w-4 mr-2" />
+                            <Building2 className="h-4 w-4 mr-2" />
                             {dept.name.split(" ")[0]}
                           </CardTitle>
                           {formData.department === dept.id && (

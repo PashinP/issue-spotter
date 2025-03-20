@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { 
   ArrowUp, ArrowDown, MessageCircle, Share2, User, MapPin, 
-  ThumbsUp, AlertTriangle, Trash2, Road, Construction, LightbulbOff 
+  ThumbsUp, AlertTriangle, Trash2, Construction, LightbulbOff,
+  MapIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ export interface Issue {
   };
   userVote?: "up" | "down" | null;
   hasImage?: boolean;
+  hasFeedback?: boolean;
 }
 
 interface IssueCardProps {
@@ -44,7 +45,6 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
   
   const handleVote = (type: "up" | "down") => {
     setVotes(prev => {
-      // If already voted this type, remove vote
       if (prev.userVote === type) {
         return {
           upvotes: type === "up" ? prev.upvotes - 1 : prev.upvotes,
@@ -53,7 +53,6 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
         };
       }
       
-      // If changing vote
       if (prev.userVote) {
         return {
           upvotes: type === "up" ? prev.upvotes + 1 : prev.upvotes - 1,
@@ -62,7 +61,6 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
         };
       }
       
-      // If new vote
       return {
         upvotes: type === "up" ? prev.upvotes + 1 : prev.upvotes,
         downvotes: type === "down" ? prev.downvotes + 1 : prev.downvotes,
@@ -74,7 +72,7 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
   const getIssueIcon = () => {
     switch (issue.type) {
       case "pothole":
-        return <Road className="h-4 w-4" />;
+        return <MapIcon className="h-4 w-4" />;
       case "garbage":
         return <Trash2 className="h-4 w-4" />;
       case "construction":
@@ -226,7 +224,6 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
   );
 };
 
-// Helper function to format date
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
