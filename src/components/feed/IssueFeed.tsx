@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import IssueCard, { Issue } from "./IssueCard";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils"; // Added missing import for cn utility
 import { 
   MapPin, Search, Filter, User, MessageCircle, ThumbsUp, 
   Clock, Star, SlidersHorizontal, ArrowUpDown, Check,
