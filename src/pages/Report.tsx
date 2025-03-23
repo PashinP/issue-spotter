@@ -1,18 +1,21 @@
 
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import IssueReportForm from "@/components/report/IssueReportForm";
 
 const Report = () => {
-  // Check if user is authenticated
-  const isAuthenticated = localStorage.getItem("auth") !== null;
+  const navigate = useNavigate();
   
-  // If not authenticated, redirect to login
-  if (!isAuthenticated) {
-    window.location.href = "/login";
-    return null;
-  }
+  // Check if user is authenticated
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem("auth") !== null;
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+  }, [navigate]);
   
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto py-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Report an Issue</h1>
         <p className="text-muted-foreground">

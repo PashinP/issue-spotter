@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Tabs, TabsContent, TabsList, TabsTrigger 
-} from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox"; 
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -17,29 +16,85 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import {
-  MapIcon, Trash2, Construction, LightbulbOff, Plus, 
+  MapPin, Trash2, Construction, LightbulbOff, Plus, 
   Check, Upload, Camera, Map, Building, LoaderCircle,
-  Building2, ArrowLeft, ArrowRight, Image
+  Building2, ArrowLeft, ArrowRight, Image, Shield,
+  AlertTriangle, Droplets, Zap, Wifi, Road
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Department data with specific issue categories
 const DEPARTMENTS = [
-  { id: "mcd", name: "Municipal Corporation of Delhi (MCD)" },
-  { id: "pwd", name: "Public Works Department (PWD)" },
-  { id: "dda", name: "Delhi Development Authority (DDA)" },
-  { id: "police", name: "Delhi Police" },
-  { id: "water", name: "Delhi Jal Board" },
-  { id: "electricity", name: "BSES Rajdhani Power Ltd" },
+  { 
+    id: "mcd", 
+    name: "Municipal Corporation of Delhi (MCD)",
+    issues: [
+      { id: "pothole", name: "Potholes in my area", icon: Road, description: "Report potholes or damaged roads that need repair" },
+      { id: "garbage", name: "Garbage not collected", icon: Trash2, description: "Report issues with garbage collection or dumping" },
+      { id: "drainage", name: "Drainage issues", icon: Droplets, description: "Report clogged drains or water logging problems" },
+      { id: "park", name: "Park maintenance", icon: Map, description: "Report issues with public parks or green spaces" }
+    ]
+  },
+  { 
+    id: "pwd", 
+    name: "Public Works Department (PWD)",
+    issues: [
+      { id: "road", name: "Road damage", icon: Road, description: "Report damages to major roads or highways" },
+      { id: "bridge", name: "Bridge/flyover issues", icon: Road, description: "Report issues with bridges or flyovers" },
+      { id: "construction", name: "Illegal construction", icon: Construction, description: "Report unauthorized building activity" },
+      { id: "sidewalk", name: "Sidewalk problems", icon: Road, description: "Report damaged footpaths or sidewalks" }
+    ]
+  },
+  { 
+    id: "dda", 
+    name: "Delhi Development Authority (DDA)",
+    issues: [
+      { id: "land", name: "Land encroachment", icon: Map, description: "Report unauthorized encroachment on DDA land" },
+      { id: "housing", name: "Housing scheme issues", icon: Building, description: "Report issues with DDA housing schemes" },
+      { id: "park", name: "Park maintenance", icon: Map, description: "Report issues with DDA parks or recreational areas" },
+      { id: "construction", name: "Unauthorized construction", icon: Construction, description: "Report illegal construction on DDA property" }
+    ]
+  },
+  { 
+    id: "police", 
+    name: "Delhi Police",
+    issues: [
+      { id: "security", name: "Security concerns", icon: Shield, description: "Report security concerns in your area" },
+      { id: "traffic", name: "Traffic violations", icon: Road, description: "Report persistent traffic rule violations" },
+      { id: "noise", name: "Noise pollution", icon: AlertTriangle, description: "Report excessive noise in residential areas" },
+      { id: "harassment", name: "Public harassment", icon: AlertTriangle, description: "Report harassment or disturbance in public areas" }
+    ]
+  },
+  { 
+    id: "water", 
+    name: "Delhi Jal Board",
+    issues: [
+      { id: "supply", name: "Water supply issues", icon: Droplets, description: "Report problems with water supply" },
+      { id: "quality", name: "Water quality concerns", icon: Droplets, description: "Report issues with water quality" },
+      { id: "leakage", name: "Water leakage", icon: Droplets, description: "Report water pipe leakage or bursts" },
+      { id: "billing", name: "Water billing problems", icon: AlertTriangle, description: "Report issues with water bills" }
+    ]
+  },
+  { 
+    id: "electricity", 
+    name: "BSES Rajdhani Power Ltd",
+    issues: [
+      { id: "outage", name: "Power outage", icon: Zap, description: "Report power outages in your area" },
+      { id: "voltage", name: "Voltage fluctuation", icon: Zap, description: "Report voltage fluctuation issues" },
+      { id: "billing", name: "Electricity billing", icon: AlertTriangle, description: "Report issues with electricity bills" },
+      { id: "wiring", name: "Dangerous wiring", icon: AlertTriangle, description: "Report exposed or dangerous electrical wiring" }
+    ]
+  },
 ];
 
-const PROBLEM_TYPES = [
+// Generic issues that can be used with any department
+const GENERIC_PROBLEM_TYPES = [
   { 
     id: "pothole", 
     name: "Potholes in my area", 
-    icon: MapIcon,
+    icon: Road,
     description: "Report potholes or damaged roads that need repair"
   },
   { 
@@ -85,6 +140,7 @@ const IssueReportForm = () => {
     location: "",
     images: [] as File[],
     previewUrls: [] as string[],
+    isAnonymous: false,
   });
   
   const { toast } = useToast();
@@ -181,7 +237,9 @@ const IssueReportForm = () => {
       const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
       complaints.push({
         id: Date.now().toString(),
-        title: formData.problemTypeName || PROBLEM_TYPES.find(t => t.id === formData.problemType)?.name,
+        title: formData.problemTypeName || 
+          DEPARTMENTS.find(d => d.id === formData.department)?.issues.find(i => i.id === formData.problemType)?.name || 
+          GENERIC_PROBLEM_TYPES.find(t => t.id === formData.problemType)?.name,
         description: formData.details,
         location: formData.location,
         department: DEPARTMENTS.find(d => d.id === formData.department)?.name,
@@ -195,10 +253,17 @@ const IssueReportForm = () => {
           name: "John Smith",
           constituency: formData.constituency
         },
-        hasImage: formData.previewUrls.length > 0
+        hasImage: formData.previewUrls.length > 0,
+        isAnonymous: formData.isAnonymous
       });
       localStorage.setItem("complaints", JSON.stringify(complaints));
     }, 2000);
+  };
+  
+  // Get the problem types for the selected department
+  const getProblemTypes = () => {
+    const selectedDepartment = DEPARTMENTS.find(dept => dept.id === formData.department);
+    return selectedDepartment ? selectedDepartment.issues : GENERIC_PROBLEM_TYPES;
   };
   
   return (
@@ -302,12 +367,12 @@ const IssueReportForm = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-2">Select Problem Type</h2>
               <p className="text-muted-foreground">
-                Choose the category that best describes your issue.
+                Choose the category that best describes your issue with {DEPARTMENTS.find(d => d.id === formData.department)?.name}.
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {PROBLEM_TYPES.map((type) => (
+              {getProblemTypes().map((type) => (
                 <Card 
                   key={type.id}
                   className={cn(
@@ -333,6 +398,9 @@ const IssueReportForm = () => {
                         type.id === "garbage" ? "bg-green-100 text-green-600" :
                         type.id === "construction" ? "bg-blue-100 text-blue-600" :
                         type.id === "streetlight" ? "bg-yellow-100 text-yellow-600" :
+                        type.id === "security" ? "bg-purple-100 text-purple-600" :
+                        type.id === "water" ? "bg-blue-100 text-blue-600" :
+                        type.id === "outage" ? "bg-red-100 text-red-600" :
                         "bg-purple-100 text-purple-600"
                       )}>
                         <type.icon className="h-6 w-6" />
@@ -459,6 +527,23 @@ const IssueReportForm = () => {
                   </div>
                 )}
               </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="anonymous" 
+                  checked={formData.isAnonymous}
+                  onCheckedChange={(checked) => 
+                    updateFormData({ isAnonymous: checked === true })
+                  }
+                />
+                <label
+                  htmlFor="anonymous"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                >
+                  <Shield className="h-4 w-4 mr-1 text-muted-foreground" />
+                  Submit anonymously (your identity will be hidden from the public)
+                </label>
+              </div>
             </div>
             
             <div className="flex justify-between">
@@ -510,12 +595,25 @@ const IssueReportForm = () => {
                     <div>
                       <p className="text-sm font-medium">Problem Type</p>
                       <p className="text-sm text-muted-foreground">
-                        {PROBLEM_TYPES.find(t => t.id === formData.problemType)?.name}
+                        {formData.problemTypeName}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium">Location</p>
                       <p className="text-sm text-muted-foreground">{formData.location}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-sm font-medium">Submission Type</p>
+                      <p className="text-sm text-muted-foreground flex items-center">
+                        {formData.isAnonymous ? (
+                          <>
+                            <Shield className="h-4 w-4 mr-1" />
+                            Anonymous (your identity will be hidden)
+                          </>
+                        ) : (
+                          "Public (your name will be visible)"
+                        )}
+                      </p>
                     </div>
                   </div>
                   
