@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ import {
   MapPin, Trash2, Construction, LightbulbOff, Plus, 
   Check, Upload, Camera, Map, Building, LoaderCircle,
   Building2, ArrowLeft, ArrowRight, Image, Shield,
-  AlertTriangle, Droplets, Zap, Wifi, Road
+  AlertTriangle, Droplets, Zap, Wifi
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,7 @@ const DEPARTMENTS = [
     id: "mcd", 
     name: "Municipal Corporation of Delhi (MCD)",
     issues: [
-      { id: "pothole", name: "Potholes in my area", icon: Road, description: "Report potholes or damaged roads that need repair" },
+      { id: "pothole", name: "Potholes in my area", icon: Map, description: "Report potholes or damaged roads that need repair" },
       { id: "garbage", name: "Garbage not collected", icon: Trash2, description: "Report issues with garbage collection or dumping" },
       { id: "drainage", name: "Drainage issues", icon: Droplets, description: "Report clogged drains or water logging problems" },
       { id: "park", name: "Park maintenance", icon: Map, description: "Report issues with public parks or green spaces" }
@@ -41,10 +40,10 @@ const DEPARTMENTS = [
     id: "pwd", 
     name: "Public Works Department (PWD)",
     issues: [
-      { id: "road", name: "Road damage", icon: Road, description: "Report damages to major roads or highways" },
-      { id: "bridge", name: "Bridge/flyover issues", icon: Road, description: "Report issues with bridges or flyovers" },
+      { id: "road", name: "Road damage", icon: Map, description: "Report damages to major roads or highways" },
+      { id: "bridge", name: "Bridge/flyover issues", icon: Map, description: "Report issues with bridges or flyovers" },
       { id: "construction", name: "Illegal construction", icon: Construction, description: "Report unauthorized building activity" },
-      { id: "sidewalk", name: "Sidewalk problems", icon: Road, description: "Report damaged footpaths or sidewalks" }
+      { id: "sidewalk", name: "Sidewalk problems", icon: Map, description: "Report damaged footpaths or sidewalks" }
     ]
   },
   { 
@@ -62,7 +61,7 @@ const DEPARTMENTS = [
     name: "Delhi Police",
     issues: [
       { id: "security", name: "Security concerns", icon: Shield, description: "Report security concerns in your area" },
-      { id: "traffic", name: "Traffic violations", icon: Road, description: "Report persistent traffic rule violations" },
+      { id: "traffic", name: "Traffic violations", icon: AlertTriangle, description: "Report persistent traffic rule violations" },
       { id: "noise", name: "Noise pollution", icon: AlertTriangle, description: "Report excessive noise in residential areas" },
       { id: "harassment", name: "Public harassment", icon: AlertTriangle, description: "Report harassment or disturbance in public areas" }
     ]
@@ -94,7 +93,7 @@ const GENERIC_PROBLEM_TYPES = [
   { 
     id: "pothole", 
     name: "Potholes in my area", 
-    icon: Road,
+    icon: Map,
     description: "Report potholes or damaged roads that need repair"
   },
   { 
@@ -260,7 +259,6 @@ const IssueReportForm = () => {
     }, 2000);
   };
   
-  // Get the problem types for the selected department
   const getProblemTypes = () => {
     const selectedDepartment = DEPARTMENTS.find(dept => dept.id === formData.department);
     return selectedDepartment ? selectedDepartment.issues : GENERIC_PROBLEM_TYPES;
