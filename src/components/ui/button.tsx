@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -54,3 +55,43 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
+
+// Add additional global style in index.css
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = `
+    .glass-card {
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Additional styles for rating system */
+    .rating-container:hover .rating-star {
+      color: #d1d5db;
+    }
+    
+    .rating-star.active,
+    .rating-star.hover {
+      color: #fbbf24;
+      fill: #fbbf24;
+    }
+    
+    .star-container:hover .rating-star:hover ~ .rating-star {
+      color: #d1d5db;
+      fill: none;
+    }
+  `;
+  document.head.appendChild(style);
+}

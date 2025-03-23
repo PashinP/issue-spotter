@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { 
   Dialog, DialogContent, DialogDescription, 
-  DialogFooter, DialogHeader, DialogTitle, DialogTrigger 
+  DialogFooter, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
 import { 
   CheckCircle2, Clock, Search, Star, MapPin, AlertTriangle,
@@ -20,6 +19,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Issue } from "../feed/IssueCard";
 import { MOCK_ISSUES } from "@/lib/mock-data";
+import FeedbackForm from "../ratings/FeedbackForm";
+import RatingStars from "../ratings/RatingStars";
 
 const IssueTracker = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -28,18 +29,10 @@ const IssueTracker = () => {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [feedback, setFeedback] = useState({
-    responseTime: 0,
-    workQuality: 0,
-    satisfaction: 0,
-    comments: ""
-  });
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   
   const { toast } = useToast();
   
   useEffect(() => {
-    // Get complaints from localStorage or use mock data
     const storedComplaints = localStorage.getItem("complaints");
     if (storedComplaints) {
       const parsedComplaints = JSON.parse(storedComplaints);
@@ -52,7 +45,6 @@ const IssueTracker = () => {
   useEffect(() => {
     let result = [...issues];
     
-    // Filter by search query
     if (searchQuery) {
       result = result.filter(
         issue => 
@@ -62,43 +54,28 @@ const IssueTracker = () => {
       );
     }
     
-    // Filter by tab
     if (activeTab !== "all") {
       result = result.filter(issue => issue.status === activeTab);
     }
     
     setFilteredIssues(result);
   }, [issues, searchQuery, activeTab]);
-  
-  const handleFeedbackChange = (type: keyof typeof feedback, value: number | string) => {
-    setFeedback(prev => ({ ...prev, [type]: value }));
-  };
-  
-  const submitFeedback = () => {
-    setIsSubmittingFeedback(true);
+
+  const handleFeedbackSubmitted = () => {
+    setShowFeedbackModal(false);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmittingFeedback(false);
-      setShowFeedbackModal(false);
-      
-      // Update the issue in the local state
-      if (selectedIssue) {
-        const updatedIssues = issues.map(issue => 
-          issue.id === selectedIssue.id 
-            ? { ...issue, hasFeedback: true } 
-            : issue
-        );
-        setIssues(updatedIssues);
-      }
-      
-      toast({
-        title: "Feedback submitted",
-        description: "Thank you for your feedback!",
-      });
-    }, 1500);
+    const storedComplaints = localStorage.getItem("complaints");
+    if (storedComplaints) {
+      const parsedComplaints = JSON.parse(storedComplaints);
+      setIssues([...parsedComplaints, ...MOCK_ISSUES.slice(0, 2)]);
+    }
+    
+    toast({
+      title: "Feedback submitted",
+      description: "Thank you for rating the department's service",
+    });
   };
-  
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 justify-between">
@@ -140,7 +117,7 @@ const IssueTracker = () => {
               {filteredIssues.map((issue) => (
                 <Card 
                   key={issue.id}
-                  className="overflow-hidden hover:shadow-md transition-all"
+                  className="overflow-hidden hover:shadow-md transition-all cursor-pointer"
                   onClick={() => setSelectedIssue(issue)}
                 >
                   <div className="flex flex-col md:flex-row">
@@ -181,6 +158,23 @@ const IssueTracker = () => {
                       </div>
                       
                       <p className="text-sm text-muted-foreground line-clamp-2">{issue.description}</p>
+                      
+                      {issue.rating && (
+                        <div className="mt-2">
+                          <div className="flex items-center gap-1">
+                            <RatingStars 
+                              initialRating={
+                                (issue.rating.responseTime + issue.rating.workQuality + issue.rating.satisfaction) / 3
+                              } 
+                              size="sm"
+                              readOnly
+                            />
+                            <span className="text-xs text-muted-foreground">
+                              You rated this issue
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex md:flex-col justify-between border-t md:border-t-0 md:border-l border-border md:w-48 p-4 bg-muted/30">
@@ -239,106 +233,16 @@ const IssueTracker = () => {
       
       <Dialog open={showFeedbackModal} onOpenChange={setShowFeedbackModal}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Rate Your Experience</DialogTitle>
-            <DialogDescription>
-              Help us improve by rating the resolution of your complaint.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Response Time</p>
-              <div className="flex items-center justify-between">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Button
-                    key={star}
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "rounded-full h-10 w-10",
-                      feedback.responseTime >= star ? "text-yellow-500" : "text-muted"
-                    )}
-                    onClick={() => handleFeedbackChange("responseTime", star)}
-                  >
-                    <Star className="h-6 w-6" fill={feedback.responseTime >= star ? "currentColor" : "none"} />
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Work Quality</p>
-              <div className="flex items-center justify-between">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Button
-                    key={star}
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "rounded-full h-10 w-10",
-                      feedback.workQuality >= star ? "text-yellow-500" : "text-muted"
-                    )}
-                    onClick={() => handleFeedbackChange("workQuality", star)}
-                  >
-                    <Star className="h-6 w-6" fill={feedback.workQuality >= star ? "currentColor" : "none"} />
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Overall Satisfaction</p>
-              <div className="flex items-center justify-between">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Button
-                    key={star}
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "rounded-full h-10 w-10",
-                      feedback.satisfaction >= star ? "text-yellow-500" : "text-muted"
-                    )}
-                    onClick={() => handleFeedbackChange("satisfaction", star)}
-                  >
-                    <Star className="h-6 w-6" fill={feedback.satisfaction >= star ? "currentColor" : "none"} />
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="comments" className="text-sm font-medium">
-                Additional Comments
-              </label>
-              <textarea
-                id="comments"
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Share your experience..."
-                value={feedback.comments}
-                onChange={(e) => handleFeedbackChange("comments", e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowFeedbackModal(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={submitFeedback} 
-              disabled={isSubmittingFeedback || !feedback.satisfaction}
-            >
-              {isSubmittingFeedback ? (
-                <>
-                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit Feedback"
-              )}
-            </Button>
-          </DialogFooter>
+          {selectedIssue && (
+            <FeedbackForm
+              departmentId={selectedIssue.department.toLowerCase()}
+              departmentName={selectedIssue.department}
+              issueId={selectedIssue.id}
+              issueTitle={selectedIssue.title}
+              onSubmitSuccess={handleFeedbackSubmitted}
+              onCancel={() => setShowFeedbackModal(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
       
@@ -390,6 +294,51 @@ const IssueTracker = () => {
                   alt={selectedIssue.title}
                   className="w-full h-auto object-cover"
                 />
+              </div>
+            )}
+            
+            {selectedIssue.rating && (
+              <div className="bg-muted/30 rounded-md p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">
+                    Your Rating
+                  </Badge>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Response Time</p>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.responseTime}
+                      size="sm"
+                      readOnly
+                    />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Work Quality</p>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.workQuality}
+                      size="sm"
+                      readOnly
+                    />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Satisfaction</p>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.satisfaction}
+                      size="sm"
+                      readOnly
+                    />
+                  </div>
+                </div>
+                
+                {selectedIssue.rating.comment && (
+                  <div className="mt-3 text-sm italic text-muted-foreground border-t border-border pt-2">
+                    "{selectedIssue.rating.comment}"
+                  </div>
+                )}
               </div>
             )}
             
@@ -499,11 +448,7 @@ const IssueTracker = () => {
             <DialogFooter>
               {selectedIssue.status === "resolved" && !selectedIssue.hasFeedback && (
                 <Button onClick={() => {
-                  setSelectedIssue(null);
-                  setTimeout(() => {
-                    setSelectedIssue(selectedIssue);
-                    setShowFeedbackModal(true);
-                  }, 100);
+                  setShowFeedbackModal(true);
                 }}>
                   <Star className="mr-2 h-4 w-4" />
                   Provide Feedback

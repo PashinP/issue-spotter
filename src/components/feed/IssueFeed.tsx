@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import IssueCard, { Issue } from "./IssueCard";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import RatingStars from "../ratings/RatingStars";
 
 const IssueFeed = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -41,11 +40,9 @@ const IssueFeed = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Get stored complaints and combine with mock data
     const storedComplaints = localStorage.getItem("complaints");
     const localIssues = storedComplaints ? JSON.parse(storedComplaints) : [];
     
-    // Simulate API call to fetch issues
     setTimeout(() => {
       setIssues([...MOCK_ISSUES, ...localIssues]);
       setFilteredIssues([...MOCK_ISSUES, ...localIssues]);
@@ -55,7 +52,6 @@ const IssueFeed = () => {
   useEffect(() => {
     let result = [...issues];
     
-    // Filter by search query
     if (searchQuery) {
       result = result.filter(
         issue => 
@@ -65,7 +61,6 @@ const IssueFeed = () => {
       );
     }
     
-    // Apply filters
     if (filters.departments.length > 0) {
       result = result.filter(issue => 
         filters.departments.includes(issue.department.toLowerCase())
@@ -84,7 +79,6 @@ const IssueFeed = () => {
       );
     }
     
-    // Sort based on active tab
     switch (activeTab) {
       case "trending":
         result = result.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
@@ -98,7 +92,6 @@ const IssueFeed = () => {
       case "rated":
         result = result.filter(issue => issue.rating !== undefined)
           .sort((a, b) => {
-            // Calculate average ratings
             const aRating = a.rating ? 
               (a.rating.satisfaction + a.rating.responseTime + a.rating.workQuality) / 3 : 0;
             const bRating = b.rating ? 
@@ -107,8 +100,12 @@ const IssueFeed = () => {
           });
         break;
       case "my-issues":
-        // In a real app, filter by current user's ID
-        result = result.filter(issue => issue.user.name === "John Smith");
+        const userData = JSON.parse(localStorage.getItem("auth") || "{}");
+        if (userData && userData.user && userData.user.name) {
+          result = result.filter(issue => !issue.isAnonymous && issue.user.name === userData.user.name);
+        } else {
+          result = result.filter(issue => issue.user.name === "John Smith");
+        }
         break;
     }
     
@@ -119,14 +116,11 @@ const IssueFeed = () => {
     if (!commentText.trim()) return;
     
     if (selectedIssue) {
-      // In a real app, send comment to backend
-      // For demo, just update the local issue
       const updatedIssue = {
         ...selectedIssue,
         comments: selectedIssue.comments + 1
       };
       
-      // Update the issues array
       const updatedIssues = issues.map(issue => 
         issue.id === selectedIssue.id ? updatedIssue : issue
       );
@@ -393,16 +387,7 @@ const IssueFeed = () => {
             {selectedIssue.hasImage && (
               <div className="rounded-md overflow-hidden my-2 bg-muted/50">
                 <img 
-                  src={selectedIssue.type === "pothole" 
-                    ? "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                    : selectedIssue.type === "garbage" 
-                    ? "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : selectedIssue.type === "construction"
-                    ? "https://images.unsplash.com/photo-1503387837-b154d5074bd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : selectedIssue.type === "streetlight"
-                    ? "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : `https://source.unsplash.com/random/800x600?${selectedIssue.type}`
-                  }
+                  src={`https://source.unsplash.com/random/800x600?${selectedIssue.type}`} 
                   alt={selectedIssue.title}
                   className="w-full h-auto object-cover"
                   loading="lazy"
@@ -423,52 +408,36 @@ const IssueFeed = () => {
               <div className="bg-muted/30 rounded-md p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">User Rating</Badge>
+                    <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">
+                      {selectedIssue.isAnonymous ? "Anonymous Rating" : "User Rating"}
+                    </Badge>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div>
                     <p className="text-muted-foreground mb-1">Response Time</p>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star 
-                          key={star} 
-                          className={cn(
-                            "h-3 w-3", 
-                            star <= (selectedIssue.rating?.responseTime || 0) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-                          )} 
-                        />
-                      ))}
-                    </div>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.responseTime}
+                      size="sm"
+                      readOnly
+                    />
                   </div>
                   <div>
                     <p className="text-muted-foreground mb-1">Work Quality</p>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star 
-                          key={star} 
-                          className={cn(
-                            "h-3 w-3", 
-                            star <= (selectedIssue.rating?.workQuality || 0) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-                          )} 
-                        />
-                      ))}
-                    </div>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.workQuality}
+                      size="sm"
+                      readOnly
+                    />
                   </div>
                   <div>
                     <p className="text-muted-foreground mb-1">Satisfaction</p>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star 
-                          key={star} 
-                          className={cn(
-                            "h-3 w-3", 
-                            star <= (selectedIssue.rating?.satisfaction || 0) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-                          )} 
-                        />
-                      ))}
-                    </div>
+                    <RatingStars
+                      initialRating={selectedIssue.rating.satisfaction}
+                      size="sm"
+                      readOnly
+                    />
                   </div>
                 </div>
                 
@@ -530,7 +499,30 @@ const IssueFeed = () => {
                   />
                   <Button 
                     size="icon" 
-                    onClick={submitComment}
+                    onClick={() => {
+                      if (!commentText.trim()) return;
+                      
+                      if (selectedIssue) {
+                        const updatedIssue = {
+                          ...selectedIssue,
+                          comments: selectedIssue.comments + 1
+                        };
+                        
+                        const updatedIssues = issues.map(issue => 
+                          issue.id === selectedIssue.id ? updatedIssue : issue
+                        );
+                        
+                        setIssues(updatedIssues);
+                        setFilteredIssues(updatedIssues);
+                        setSelectedIssue(updatedIssue);
+                        setCommentText("");
+                        
+                        toast({
+                          title: "Comment added",
+                          description: "Your comment has been added successfully."
+                        });
+                      }
+                    }}
                     disabled={!commentText.trim()}
                   >
                     <Send className="h-4 w-4" />
