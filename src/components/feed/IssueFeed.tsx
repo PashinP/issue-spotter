@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import IssueCard, { Issue } from "./IssueCard";
 import { Button } from "@/components/ui/button";
@@ -32,26 +33,29 @@ const IssueFeed = () => {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [commentText, setCommentText] = useState("");
   const [filters, setFilters] = useState({
-    departments: [],
-    types: [],
-    status: []
+    departments: [] as string[],
+    types: [] as string[],
+    status: [] as string[],
   });
-
+  
   const { toast } = useToast();
-
+  
   useEffect(() => {
+    // Get stored complaints and combine with mock data
     const storedComplaints = localStorage.getItem("complaints");
     const localIssues = storedComplaints ? JSON.parse(storedComplaints) : [];
     
+    // Simulate API call to fetch issues
     setTimeout(() => {
       setIssues([...MOCK_ISSUES, ...localIssues]);
       setFilteredIssues([...MOCK_ISSUES, ...localIssues]);
     }, 500);
   }, []);
-
+  
   useEffect(() => {
     let result = [...issues];
     
+    // Filter by search query
     if (searchQuery) {
       result = result.filter(
         issue => 
@@ -61,6 +65,26 @@ const IssueFeed = () => {
       );
     }
     
+    // Apply filters
+    if (filters.departments.length > 0) {
+      result = result.filter(issue => 
+        filters.departments.includes(issue.department.toLowerCase())
+      );
+    }
+    
+    if (filters.types.length > 0) {
+      result = result.filter(issue => 
+        filters.types.includes(issue.type)
+      );
+    }
+    
+    if (filters.status.length > 0) {
+      result = result.filter(issue => 
+        filters.status.includes(issue.status)
+      );
+    }
+    
+    // Sort based on active tab
     switch (activeTab) {
       case "trending":
         result = result.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
@@ -72,20 +96,53 @@ const IssueFeed = () => {
         result = result.filter(issue => issue.status === "resolved");
         break;
       case "rated":
-        result = result.filter(issue => issue.rating && issue.status === "resolved");
+        result = result.filter(issue => issue.rating !== undefined)
+          .sort((a, b) => {
+            // Calculate average ratings
+            const aRating = a.rating ? 
+              (a.rating.satisfaction + a.rating.responseTime + a.rating.workQuality) / 3 : 0;
+            const bRating = b.rating ? 
+              (b.rating.satisfaction + b.rating.responseTime + b.rating.workQuality) / 3 : 0;
+            return bRating - aRating;
+          });
         break;
       case "my-issues":
+        // In a real app, filter by current user's ID
         result = result.filter(issue => issue.user.name === "John Smith");
         break;
     }
     
     setFilteredIssues(result);
   }, [issues, activeTab, searchQuery, filters]);
-
+  
   const submitComment = () => {
-    // Implement comment submission logic here
+    if (!commentText.trim()) return;
+    
+    if (selectedIssue) {
+      // In a real app, send comment to backend
+      // For demo, just update the local issue
+      const updatedIssue = {
+        ...selectedIssue,
+        comments: selectedIssue.comments + 1
+      };
+      
+      // Update the issues array
+      const updatedIssues = issues.map(issue => 
+        issue.id === selectedIssue.id ? updatedIssue : issue
+      );
+      
+      setIssues(updatedIssues);
+      setFilteredIssues(updatedIssues);
+      setSelectedIssue(updatedIssue);
+      setCommentText("");
+      
+      toast({
+        title: "Comment added",
+        description: "Your comment has been added successfully."
+      });
+    }
   };
-
+  
   return (
     <>
       <div className="mb-6 space-y-4">
@@ -99,9 +156,122 @@ const IssueFeed = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button size="icon" variant="outline">
-            <Filter className="h-4 w-4" />
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" variant="outline">
+                <SlidersHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Filter Issues</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                By Department
+              </DropdownMenuLabel>
+              {DEPARTMENTS.map((dept) => (
+                <DropdownMenuCheckboxItem
+                  key={dept.id}
+                  checked={filters.departments.includes(dept.id)}
+                  onCheckedChange={(checked) => {
+                    setFilters(prev => ({
+                      ...prev,
+                      departments: checked 
+                        ? [...prev.departments, dept.id] 
+                        : prev.departments.filter(d => d !== dept.id)
+                    }));
+                  }}
+                >
+                  {dept.name.split(" ")[0]}
+                </DropdownMenuCheckboxItem>
+              ))}
+              
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                By Status
+              </DropdownMenuLabel>
+              <DropdownMenuCheckboxItem
+                checked={filters.status.includes("pending")}
+                onCheckedChange={(checked) => {
+                  setFilters(prev => ({
+                    ...prev,
+                    status: checked 
+                      ? [...prev.status, "pending"] 
+                      : prev.status.filter(s => s !== "pending")
+                  }));
+                }}
+              >
+                Pending
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={filters.status.includes("in_progress")}
+                onCheckedChange={(checked) => {
+                  setFilters(prev => ({
+                    ...prev,
+                    status: checked 
+                      ? [...prev.status, "in_progress"] 
+                      : prev.status.filter(s => s !== "in_progress")
+                  }));
+                }}
+              >
+                In Progress
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={filters.status.includes("resolved")}
+                onCheckedChange={(checked) => {
+                  setFilters(prev => ({
+                    ...prev,
+                    status: checked 
+                      ? [...prev.status, "resolved"] 
+                      : prev.status.filter(s => s !== "resolved")
+                  }));
+                }}
+              >
+                Resolved
+              </DropdownMenuCheckboxItem>
+              
+              <DropdownMenuSeparator />
+              
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full justify-start text-xs font-normal"
+                onClick={() => setFilters({
+                  departments: [],
+                  types: [],
+                  status: []
+                })}
+              >
+                Reset Filters
+              </Button>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" variant="outline">
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={activeTab === "trending"}
+                onCheckedChange={() => setActiveTab("trending")}
+              >
+                Most Upvoted
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={activeTab === "recent"}
+                onCheckedChange={() => setActiveTab("recent")}
+              >
+                Most Recent
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <Tabs defaultValue="trending" className="w-full" onValueChange={setActiveTab}>
@@ -223,7 +393,16 @@ const IssueFeed = () => {
             {selectedIssue.hasImage && (
               <div className="rounded-md overflow-hidden my-2 bg-muted/50">
                 <img 
-                  src={`https://source.unsplash.com/random/800x600?${selectedIssue.type}`} 
+                  src={selectedIssue.type === "pothole" 
+                    ? "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                    : selectedIssue.type === "garbage" 
+                    ? "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    : selectedIssue.type === "construction"
+                    ? "https://images.unsplash.com/photo-1503387837-b154d5074bd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    : selectedIssue.type === "streetlight"
+                    ? "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    : `https://source.unsplash.com/random/800x600?${selectedIssue.type}`
+                  }
                   alt={selectedIssue.title}
                   className="w-full h-auto object-cover"
                   loading="lazy"
