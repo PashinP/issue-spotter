@@ -1,6 +1,6 @@
 
 import { 
-  MapPin, Trash2, Construction, LightbulbOff, Plus, 
+  MapPin, Trash2, Construction, LightbulbOff, Plus, FileText,
   Building, Shield, AlertTriangle, Droplets, Zap, Wifi, 
   Map as MapIcon // Rename Map to MapIcon to avoid conflict
 } from "lucide-react";
@@ -112,7 +112,7 @@ export const GENERIC_PROBLEM_TYPES: IssueType[] = [
   { 
     id: "custom", 
     name: "Custom complaint", 
-    icon: Plus,
+    icon: FileText,
     description: "File a different type of complaint not listed above"
   },
 ];

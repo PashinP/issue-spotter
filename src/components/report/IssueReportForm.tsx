@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import {
-  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin
+  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin, FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEPARTMENTS, CONSTITUENCIES, getProblemTypes, IssueType } from "@/data/departments";
@@ -38,6 +39,7 @@ const IssueReportForm = () => {
     images: [] as File[],
     previewUrls: [] as string[],
     isAnonymous: false,
+    customProblemName: "",
   });
   
   const { toast } = useToast();
@@ -93,6 +95,16 @@ const IssueReportForm = () => {
         });
         return;
       }
+      
+      // If custom problem is selected but no name is provided
+      if (formData.problemType === "custom" && !formData.customProblemName.trim()) {
+        toast({
+          title: "Please provide a name for your custom issue",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       setStep("details");
       setProgress(75);
     } else if (step === "details") {
@@ -134,8 +146,10 @@ const IssueReportForm = () => {
       const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
       complaints.push({
         id: Date.now().toString(),
-        title: formData.problemTypeName || 
-          DEPARTMENTS.find(d => d.id === formData.department)?.issues.find(i => i.id === formData.problemType)?.name,
+        title: formData.problemType === "custom" ? formData.customProblemName : (
+          formData.problemTypeName || 
+          DEPARTMENTS.find(d => d.id === formData.department)?.issues.find(i => i.id === formData.problemType)?.name
+        ),
         description: formData.details,
         location: formData.location,
         department: DEPARTMENTS.find(d => d.id === formData.department)?.name,
@@ -154,6 +168,29 @@ const IssueReportForm = () => {
       });
       localStorage.setItem("complaints", JSON.stringify(complaints));
     }, 2000);
+  };
+  
+  // Create a problem types array that always includes the custom option
+  const getAllProblemTypes = () => {
+    const departmentIssues = getProblemTypes(formData.department);
+    
+    // Check if custom option is already in the list
+    const hasCustomOption = departmentIssues.some(item => item.id === "custom");
+    
+    if (hasCustomOption) {
+      return departmentIssues;
+    }
+    
+    // Add custom option
+    return [
+      ...departmentIssues,
+      {
+        id: "custom",
+        name: "Custom Issue",
+        icon: FileText,
+        description: "Report a different issue not listed above"
+      }
+    ];
   };
   
   return (
@@ -262,7 +299,7 @@ const IssueReportForm = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {getProblemTypes(formData.department).map((type: IssueType) => (
+              {getAllProblemTypes().map((type: IssueType) => (
                 <Card 
                   key={type.id}
                   className={cn(
@@ -273,14 +310,10 @@ const IssueReportForm = () => {
                   )}
                   onClick={() => updateFormData({ 
                     problemType: type.id,
-                    problemTypeName: type.name
+                    problemTypeName: type.id === "custom" ? formData.customProblemName : type.name
                   })}
                 >
                   <div className="relative">
-                    {type.id !== "custom" && (
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-                    )}
-                    
                     <div className="p-6 flex flex-col items-center text-center relative z-10">
                       <div className={cn(
                         "flex items-center justify-center rounded-full p-3 mb-4",
@@ -291,6 +324,7 @@ const IssueReportForm = () => {
                         type.id === "security" ? "bg-purple-100 text-purple-600" :
                         type.id === "water" ? "bg-blue-100 text-blue-600" :
                         type.id === "outage" ? "bg-red-100 text-red-600" :
+                        type.id === "custom" ? "bg-gray-100 text-gray-600" :
                         "bg-purple-100 text-purple-600"
                       )}>
                         <type.icon className="h-6 w-6" />
@@ -309,6 +343,18 @@ const IssueReportForm = () => {
                 </Card>
               ))}
             </div>
+            
+            {formData.problemType === "custom" && (
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="custom-problem-name">Name your custom issue</Label>
+                <Input
+                  id="custom-problem-name"
+                  placeholder="e.g., Broken public bench, Missing street sign"
+                  value={formData.customProblemName}
+                  onChange={(e) => updateFormData({ customProblemName: e.target.value })}
+                />
+              </div>
+            )}
             
             <div className="flex justify-between">
               <Button 
