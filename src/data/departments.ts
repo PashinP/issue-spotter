@@ -1,7 +1,8 @@
 
 import { 
   MapPin, Trash2, Construction, LightbulbOff, Plus, 
-  Map, Building, Shield, AlertTriangle, Droplets, Zap, Wifi
+  Building, Shield, AlertTriangle, Droplets, Zap, Wifi, 
+  Map as MapIcon // Rename Map to MapIcon to avoid conflict
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -24,29 +25,29 @@ export const DEPARTMENTS: Department[] = [
     id: "mcd", 
     name: "Municipal Corporation of Delhi (MCD)",
     issues: [
-      { id: "pothole", name: "Potholes in my area", icon: Map, description: "Report potholes or damaged roads that need repair" },
+      { id: "pothole", name: "Potholes in my area", icon: MapIcon, description: "Report potholes or damaged roads that need repair" },
       { id: "garbage", name: "Garbage not collected", icon: Trash2, description: "Report issues with garbage collection or dumping" },
       { id: "drainage", name: "Drainage issues", icon: Droplets, description: "Report clogged drains or water logging problems" },
-      { id: "park", name: "Park maintenance", icon: Map, description: "Report issues with public parks or green spaces" }
+      { id: "park", name: "Park maintenance", icon: MapIcon, description: "Report issues with public parks or green spaces" }
     ]
   },
   { 
     id: "pwd", 
     name: "Public Works Department (PWD)",
     issues: [
-      { id: "road", name: "Road damage", icon: Map, description: "Report damages to major roads or highways" },
-      { id: "bridge", name: "Bridge/flyover issues", icon: Map, description: "Report issues with bridges or flyovers" },
+      { id: "road", name: "Road damage", icon: MapIcon, description: "Report damages to major roads or highways" },
+      { id: "bridge", name: "Bridge/flyover issues", icon: MapIcon, description: "Report issues with bridges or flyovers" },
       { id: "construction", name: "Illegal construction", icon: Construction, description: "Report unauthorized building activity" },
-      { id: "sidewalk", name: "Sidewalk problems", icon: Map, description: "Report damaged footpaths or sidewalks" }
+      { id: "sidewalk", name: "Sidewalk problems", icon: MapIcon, description: "Report damaged footpaths or sidewalks" }
     ]
   },
   { 
     id: "dda", 
     name: "Delhi Development Authority (DDA)",
     issues: [
-      { id: "land", name: "Land encroachment", icon: Map, description: "Report unauthorized encroachment on DDA land" },
+      { id: "land", name: "Land encroachment", icon: MapIcon, description: "Report unauthorized encroachment on DDA land" },
       { id: "housing", name: "Housing scheme issues", icon: Building, description: "Report issues with DDA housing schemes" },
-      { id: "park", name: "Park maintenance", icon: Map, description: "Report issues with DDA parks or recreational areas" },
+      { id: "park", name: "Park maintenance", icon: MapIcon, description: "Report issues with DDA parks or recreational areas" },
       { id: "construction", name: "Unauthorized construction", icon: Construction, description: "Report illegal construction on DDA property" }
     ]
   },
@@ -87,7 +88,7 @@ export const GENERIC_PROBLEM_TYPES: IssueType[] = [
   { 
     id: "pothole", 
     name: "Potholes in my area", 
-    icon: Map,
+    icon: MapIcon,
     description: "Report potholes or damaged roads that need repair"
   },
   { 

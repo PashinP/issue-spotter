@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import {
-  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield
+  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEPARTMENTS, CONSTITUENCIES, getProblemTypes, IssueType } from "@/data/departments";
