@@ -23,7 +23,7 @@ const buttonVariants = cva(
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8 text-base",
+        lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
       },
     },
@@ -113,31 +113,6 @@ if (typeof document !== "undefined") {
     button:hover::after {
       left: 100%;
     }
-    
-    /* Add pulse effect to primary buttons */
-    button.bg-primary:not(:hover):not(:active) {
-      animation: subtle-pulse 3s infinite;
-    }
-    
-    @keyframes subtle-pulse {
-      0%, 100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-      }
-      50% {
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-      }
-    }
-    
-    /* Improve card hover effects */
-    .card-hover {
-      transition: all 0.3s ease;
-    }
-    
-    .card-hover:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-    }
   `;
   document.head.appendChild(style);
 }
-

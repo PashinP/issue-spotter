@@ -22,8 +22,7 @@ import {
   LogIn,
   ArrowRight,
   BarChart3,
-  AlertCircle,
-  Sparkles
+  AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -137,58 +136,46 @@ const Index = () => {
   };
   
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="relative overflow-hidden rounded-xl mb-8 shadow-lg group">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-700/90 to-indigo-800/95"></div>
+    <div className="max-w-4xl mx-auto">
+      <div className="relative overflow-hidden rounded-xl mb-8 shadow-md">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-800/80 to-blue-600/90"></div>
         <img 
           src="https://images.unsplash.com/photo-1522543558187-768b6df7c25c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80" 
           alt="City skyline" 
-          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40 transform transition-transform duration-10000 ease-in-out group-hover:scale-105"
+          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
         />
         
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
-        
-        <div className="relative p-7 md:p-10">
+        <div className="relative p-6 md:p-8">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full mb-4 text-blue-50 text-sm">
-              <Sparkles className="h-3 w-3" />
-              <span>Empowering communities through civic engagement</span>
-            </div>
-            
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight leading-tight">
-              Your City. Your Voice.<br />
-              <span className="text-blue-200">Make a Difference Today</span>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white tracking-tight">
+              Welcome to Citizen Connect
             </h1>
-            <p className="text-white/90 mb-6 text-base md:text-lg leading-relaxed">
-              Report civic issues, track government responses, 
+            <p className="text-white/90 mb-6 text-base md:text-lg">
+              Empowering citizens to report civic issues, track government responses, 
               and build better communities through transparent engagement.
             </p>
             
-            <div className="flex flex-wrap gap-3 mt-6">
+            <div className="flex flex-wrap gap-3 mt-4">
               <Button 
                 onClick={handleReportIssue} 
                 className="gap-1 shadow-lg hover:shadow-xl transition-all bg-white text-blue-700 hover:bg-white/90 button-effect"
-                size="lg"
               >
                 <PlusCircle className="mr-1 h-4 w-4" />
-                Report an Issue
+                Report Issue
               </Button>
               {isAuthenticated ? (
                 <Button 
                   variant="outline" 
                   onClick={() => navigate("/tracking")}
                   className="bg-blue-700/20 text-white border-white/30 hover:bg-blue-700/30 hover:text-white button-effect"
-                  size="lg"
                 >
                   Track My Issues
-                  <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               ) : (
                 <Button 
                   variant="outline" 
                   onClick={() => navigate("/login")} 
                   className="gap-1 bg-blue-700/20 text-white border-white/30 hover:bg-blue-700/30 hover:text-white button-effect"
-                  size="lg"
                 >
                   <LogIn className="mr-1 h-4 w-4" />
                   Sign In
@@ -197,42 +184,32 @@ const Index = () => {
             </div>
           </div>
         </div>
-        
-        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-600"></div>
       </div>
       
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-blue-800">
-        <div className="h-8 w-1 bg-blue-700 rounded-full"></div>
-        Quick Access
-      </h2>
-      
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 mb-9">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 mb-8">
         {quickLinks.map((link, index) => (
           <Card 
             key={index} 
-            className="quick-link-card card-hover border-gray-100"
+            className="quick-link-card"
             onClick={() => handleQuickLinkClick(link.label)}
           >
-            <CardContent className="p-4 md:p-5 text-center">
+            <CardContent className="p-3 md:p-4 text-center">
               <div className="flex flex-col items-center">
-                <div className={cn("quick-link-icon rounded-lg p-3", link.color)}>
+                <div className={cn("quick-link-icon", link.color)}>
                   <link.icon className="h-5 w-5" />
                 </div>
-                <span className="text-sm font-medium mt-2">{link.label}</span>
+                <span className="text-xs font-medium">{link.label}</span>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
       
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-xl font-bold mb-2 flex items-center gap-2 text-blue-800">
-              <div className="h-8 w-1 bg-blue-700 rounded-full"></div>
-              Community Feed
-            </h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-xl font-semibold mb-1">Community Feed</h2>
+            <p className="text-muted-foreground text-sm">
               Stay updated with issues in your area and help by upvoting important concerns
             </p>
           </div>
@@ -270,13 +247,13 @@ const Index = () => {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Card className="info-card from-blue-50 to-sky-50 border-blue-200 text-blue-800 card-hover mb-5">
+            <Card className="info-card from-blue-50 to-sky-50 border-blue-200 text-blue-800">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-3 rounded-lg">
+                <div className="bg-blue-100 p-2 rounded-full">
                   <HelpCircle className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">How it works</h3>
+                  <h3 className="font-medium">How it works</h3>
                   <p className="text-sm text-blue-700">Report issues, upvote community concerns, and track resolution progress</p>
                 </div>
               </div>
@@ -294,48 +271,48 @@ const Index = () => {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
                   <PlusCircle className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Report an Issue</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="font-medium mb-1">Report an Issue</h4>
+                  <p className="text-sm text-muted-foreground">
                     Document problems in your community with photos and detailed descriptions. Your reports go directly to the relevant government departments.
                   </p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
                   <TrendingUp className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Upvote Community Concerns</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="font-medium mb-1">Upvote Community Concerns</h4>
+                  <p className="text-sm text-muted-foreground">
                     Support issues that matter to you. Higher votes help prioritize important community problems.
                   </p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
                   <Clock className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Track Resolution Progress</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="font-medium mb-1">Track Resolution Progress</h4>
+                  <p className="text-sm text-muted-foreground">
                     Follow the status of your reports and see how local governments are responding to community needs.
                   </p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
                   <Star className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Rate Government Services</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="font-medium mb-1">Rate Government Services</h4>
+                  <p className="text-sm text-muted-foreground">
                     Provide feedback on the quality and timeliness of issue resolution to improve accountability.
                   </p>
                 </div>
@@ -361,13 +338,13 @@ const Index = () => {
           </DialogContent>
         </Dialog>
         
-        <Card className="info-card mt-4 from-amber-50 to-yellow-50 border-amber-200 text-amber-800 card-hover">
+        <Card className="info-card mt-4 from-amber-50 to-yellow-50 border-amber-200 text-amber-800">
           <div className="flex items-center gap-3">
-            <div className="bg-amber-100 p-3 rounded-lg">
+            <div className="bg-amber-100 p-2 rounded-full">
               <AlertCircle className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <h3 className="font-semibold">Community Statistics</h3>
+              <h3 className="font-medium">Community Statistics</h3>
               <p className="text-sm text-amber-700">View issue resolution rates, response times, and department performance</p>
             </div>
           </div>
@@ -381,12 +358,9 @@ const Index = () => {
           </Button>
         </Card>
         
-        <Separator className="my-7" />
+        <Separator className="my-6" />
         
-        <div className="bg-gradient-to-b from-gray-50 to-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
-          <h3 className="text-lg font-semibold mb-3 text-blue-800">Recent Community Reports</h3>
-          <IssueFeed />
-        </div>
+        <IssueFeed />
         
         {!isAuthenticated && (
           <div className="mt-8">
