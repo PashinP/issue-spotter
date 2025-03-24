@@ -4,7 +4,7 @@ import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Bell, Home, LogOut, MessageSquare, PieChart, Settings, User, PlusCircle } from "lucide-react";
+import { Bell, Home, LogOut, MessageSquare, PieChart, Settings, User, PlusCircle, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import NavMenu from "./NavMenu";
@@ -32,25 +32,39 @@ const MainLayout = () => {
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
 
   useEffect(() => {
-    // Check if user has authenticated before
+    // Check if user has authenticated
     const auth = localStorage.getItem("auth");
     if (auth) {
       setIsAuthenticated(true);
       setUserData(JSON.parse(auth).user);
     } else {
-      navigate("/login");
+      setIsAuthenticated(false);
     }
-  }, [location.pathname, toast, navigate]);
+  }, [location.pathname]);
 
   // If on auth page, just show children without layout
   if (isAuthPage) {
     return <Outlet />;
   }
 
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("auth");
+    setIsAuthenticated(false);
+    navigate("/");
+    toast({
+      title: "Signed Out",
+      description: "You have been successfully signed out.",
+    });
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background animate-fade-in">
-        {isAuthenticated && !isMobile && (
+        {!isMobile && (
           <Sidebar className="border-r border-border/40">
             <div className="flex flex-col h-full">
               <div className="p-4">
@@ -70,109 +84,128 @@ const MainLayout = () => {
                 <ul className="space-y-2">
                   <NavItem icon={<Home size={20} />} to="/" label="Home" />
                   <NavItem icon={<PlusCircle size={20} />} to="/report" label="Report Issue" />
-                  <NavItem icon={<PieChart size={20} />} to="/tracking" label="Track Issues" />
-                  <NavItem icon={<Settings size={20} />} to="/profile" label="Profile" />
+                  {isAuthenticated && (
+                    <>
+                      <NavItem icon={<PieChart size={20} />} to="/tracking" label="Track Issues" />
+                      <NavItem icon={<Settings size={20} />} to="/profile" label="Profile" />
+                    </>
+                  )}
                 </ul>
               </SidebarContent>
               
               <div className="mt-auto p-4">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start py-6 mb-2"
-                  onClick={() => {
-                    localStorage.removeItem("auth");
-                    navigate("/login");
-                  }}
-                >
-                  <LogOut size={20} className="mr-2" />
-                  <span>Sign Out</span>
-                </Button>
+                {isAuthenticated ? (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start py-6 mb-2"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut size={20} className="mr-2" />
+                    <span>Sign Out</span>
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    className="w-full justify-start py-6 mb-2"
+                    onClick={handleLoginClick}
+                  >
+                    <LogIn size={20} className="mr-2" />
+                    <span>Sign In</span>
+                  </Button>
+                )}
               </div>
             </div>
           </Sidebar>
         )}
         
         <div className="flex-1 flex flex-col min-h-screen">
-          {isAuthenticated && (
-            <header className="border-b border-border/40 bg-white/80 backdrop-blur-sm sticky top-0 z-30">
-              <div className="flex h-16 items-center justify-between px-4 md:px-6">
-                <div className="flex items-center gap-2">
-                  {!isMobile && <SidebarTrigger />}
-                  
-                  <div className="flex items-center md:hidden">
-                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-                      <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.1" />
-                      <path d="M16 6L19.8 9.8L16 13.6L12.2 9.8L16 6Z" fill="currentColor" />
-                      <path d="M6 16L9.8 12.2L13.6 16L9.8 19.8L6 16Z" fill="currentColor" />
-                      <path d="M26 16L22.2 19.8L18.4 16L22.2 12.2L26 16Z" fill="currentColor" />
-                      <path d="M16 26L12.2 22.2L16 18.4L19.8 22.2L16 26Z" fill="currentColor" />
-                    </svg>
-                    <h2 className="text-lg font-medium">
-                      {getPageTitle(location.pathname)}
-                    </h2>
-                  </div>
-                  
-                  {!isMobile && (
-                    <h2 className="text-lg font-medium">
-                      {getPageTitle(location.pathname)}
-                    </h2>
-                  )}
+          <header className="border-b border-border/40 bg-white/80 backdrop-blur-sm sticky top-0 z-30">
+            <div className="flex h-16 items-center justify-between px-4 md:px-6">
+              <div className="flex items-center gap-2">
+                {!isMobile && <SidebarTrigger />}
+                
+                <div className="flex items-center md:hidden">
+                  <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
+                    <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.1" />
+                    <path d="M16 6L19.8 9.8L16 13.6L12.2 9.8L16 6Z" fill="currentColor" />
+                    <path d="M6 16L9.8 12.2L13.6 16L9.8 19.8L6 16Z" fill="currentColor" />
+                    <path d="M26 16L22.2 19.8L18.4 16L22.2 12.2L26 16Z" fill="currentColor" />
+                    <path d="M16 26L12.2 22.2L16 18.4L19.8 22.2L16 26Z" fill="currentColor" />
+                  </svg>
+                  <h2 className="text-lg font-medium">
+                    {getPageTitle(location.pathname)}
+                  </h2>
                 </div>
                 
-                <div className="flex items-center gap-2 md:gap-4">
-                  <Button variant="ghost" size="icon" className="rounded-full" onClick={() => toast({ title: "No new notifications" })}>
-                    <Bell size={20} />
-                  </Button>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="rounded-full">
-                        <Avatar>
-                          <User className="h-5 w-5" />
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>
-                        <div>
-                          <p className="font-medium">{userData?.name || "User"}</p>
-                          <p className="text-xs text-muted-foreground">{userData?.email}</p>
-                        </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => navigate("/profile")}>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate("/tracking")}>
-                        <PieChart className="mr-2 h-4 w-4" />
-                        <span>My Reports</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          localStorage.removeItem("auth");
-                          navigate("/login");
-                        }}
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                {!isMobile && (
+                  <h2 className="text-lg font-medium">
+                    {getPageTitle(location.pathname)}
+                  </h2>
+                )}
               </div>
-            </header>
-          )}
+              
+              <div className="flex items-center gap-2 md:gap-4">
+                {isAuthenticated ? (
+                  <>
+                    <Button variant="ghost" size="icon" className="rounded-full" onClick={() => toast({ title: "No new notifications" })}>
+                      <Bell size={20} />
+                    </Button>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full">
+                          <Avatar>
+                            <User className="h-5 w-5" />
+                          </Avatar>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>
+                          <div>
+                            <p className="font-medium">{userData?.name || "User"}</p>
+                            <p className="text-xs text-muted-foreground">{userData?.email}</p>
+                          </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate("/profile")}>
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/tracking")}>
+                          <PieChart className="mr-2 h-4 w-4" />
+                          <span>My Reports</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleSignOut}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          <span>Log out</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="rounded-md"
+                    onClick={handleLoginClick}
+                  >
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In
+                  </Button>
+                )}
+              </div>
+            </div>
+          </header>
           
           <main className={cn(
             "flex-1 overflow-auto",
-            isAuthenticated ? "px-4 py-6 md:px-6" : ""
+            "px-4 py-6 md:px-6"
           )}>
             <Outlet />
           </main>
           
-          {isAuthenticated && isMobile && <MobileNavigation />}
+          {isMobile && <MobileNavigation isAuthenticated={isAuthenticated} />}
         </div>
       </div>
     </SidebarProvider>

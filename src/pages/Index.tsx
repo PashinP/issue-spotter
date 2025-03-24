@@ -17,7 +17,8 @@ import {
   MessageSquare, 
   LineChart,
   SlidersHorizontal,
-  HelpCircle
+  HelpCircle,
+  LogIn
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,17 +41,10 @@ const Index = () => {
   // Check if user is authenticated
   const isAuthenticated = localStorage.getItem("auth") !== null;
   
-  // If not authenticated, redirect to login
-  useEffect(() => {
-    if (!isAuthenticated) {
-      window.location.href = "/login";
-    }
-  }, [isAuthenticated]);
-  
   useEffect(() => {
     // Show welcome message if first time visiting homepage
     const welcomeShown = localStorage.getItem("welcomeShown");
-    if (!welcomeShown && isAuthenticated) {
+    if (!welcomeShown) {
       setTimeout(() => {
         toast({
           title: "Welcome to Citizen Connect!",
@@ -60,11 +54,7 @@ const Index = () => {
         localStorage.setItem("welcomeShown", "true");
       }, 500);
     }
-  }, [toast, isAuthenticated]);
-  
-  if (!isAuthenticated) {
-    return null;
-  }
+  }, [toast]);
   
   // Handle quick link clicks
   const handleQuickLinkClick = (linkType: string) => {
@@ -79,17 +69,42 @@ const Index = () => {
         });
         break;
       case "Recent Reports":
-        navigate("/tracking");
+        if (isAuthenticated) {
+          navigate("/tracking");
+        } else {
+          promptLogin("view your reports");
+        }
         break;
       case "Resolved Cases":
-        navigate("/tracking?filter=resolved");
+        if (isAuthenticated) {
+          navigate("/tracking?filter=resolved");
+        } else {
+          promptLogin("view resolved cases");
+        }
         break;
       case "Rate Services":
-        navigate("/profile");
+        if (isAuthenticated) {
+          navigate("/profile");
+        } else {
+          promptLogin("rate services");
+        }
         break;
       default:
         break;
     }
+  };
+  
+  // Show login prompt for protected features
+  const promptLogin = (action: string) => {
+    toast({
+      title: "Authentication Required",
+      description: `Please log in to ${action}`,
+      action: (
+        <Button variant="default" size="sm" onClick={() => navigate("/login")}>
+          Sign In
+        </Button>
+      ),
+    });
   };
   
   // Use this as a placeholder for features that aren't fully implemented
@@ -108,32 +123,47 @@ const Index = () => {
     { icon: Star, label: "Rate Services", color: "bg-purple-100 text-purple-600" }
   ];
   
+  const handleReportIssue = () => {
+    if (isAuthenticated) {
+      navigate("/report");
+    } else {
+      promptLogin("report an issue");
+    }
+  };
+  
   return (
     <div className="max-w-4xl mx-auto">
       <div className="relative overflow-hidden rounded-xl mb-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-secondary/60"></div>
         <img 
           src="https://images.unsplash.com/photo-1522543558187-768b6df7c25c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80" 
           alt="City skyline" 
-          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-20"
+          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-30"
         />
         
         <div className="relative p-6 md:p-8">
           <div className="max-w-2xl">
-            <h1 className="text-3xl font-bold mb-2">Welcome to Citizen Connect</h1>
-            <p className="text-muted-foreground mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-foreground tracking-tight">Welcome to Citizen Connect</h1>
+            <p className="text-muted-foreground mb-6 text-base md:text-lg">
               Empowering citizens to report civic issues, track government responses, 
               and build better communities through transparent engagement.
             </p>
             
             <div className="flex flex-wrap gap-3 mt-4">
-              <Button onClick={() => navigate("/report")} className="gap-1">
+              <Button onClick={handleReportIssue} className="gap-1 shadow-md hover:shadow-lg transition-all">
                 <PlusCircle className="mr-1 h-4 w-4" />
                 Report Issue
               </Button>
-              <Button variant="outline" onClick={() => navigate("/tracking")}>
-                Track My Issues
-              </Button>
+              {isAuthenticated ? (
+                <Button variant="outline" onClick={() => navigate("/tracking")}>
+                  Track My Issues
+                </Button>
+              ) : (
+                <Button variant="outline" onClick={() => navigate("/login")} className="gap-1">
+                  <LogIn className="mr-1 h-4 w-4" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -143,7 +173,7 @@ const Index = () => {
         {quickLinks.map((link, index) => (
           <Card 
             key={index} 
-            className="cursor-pointer hover:shadow-md transition-all"
+            className="cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-muted"
             onClick={() => handleQuickLinkClick(link.label)}
           >
             <CardContent className="p-3 md:p-4 text-center">
@@ -200,7 +230,7 @@ const Index = () => {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Card className="p-4 mb-6 flex items-center justify-between bg-orange-50 border-orange-200 text-orange-800 cursor-pointer hover:bg-orange-100 transition-colors">
+            <Card className="p-4 mb-6 flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200 text-orange-800 cursor-pointer hover:bg-orange-100 transition-colors shadow-sm hover:shadow-md">
               <div className="flex items-center gap-3">
                 <div className="bg-orange-100 p-2 rounded-full">
                   <HelpCircle className="h-5 w-5 text-orange-500" />
@@ -277,6 +307,11 @@ const Index = () => {
                   Got it, thanks!
                 </Button>
               </DialogClose>
+              {!isAuthenticated && (
+                <Button type="button" variant="default" onClick={() => navigate("/login")}>
+                  Sign In to Participate
+                </Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -284,6 +319,17 @@ const Index = () => {
         <Separator className="mb-6" />
         
         <IssueFeed />
+        
+        {!isAuthenticated && (
+          <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-secondary/10 rounded-lg border border-border/50 text-center">
+            <h3 className="text-lg font-medium mb-2">Ready to get involved?</h3>
+            <p className="text-muted-foreground mb-4">Sign in to report issues, engage with the community, and track resolutions</p>
+            <Button onClick={() => navigate("/login")} className="gap-2">
+              <LogIn className="h-4 w-4" />
+              Sign In to Participate
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

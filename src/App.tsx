@@ -13,6 +13,7 @@ import Tracking from "./pages/Tracking";
 import Profile from "./pages/Profile";
 import Trending from "./pages/Trending";
 import NotFound from "./pages/NotFound";
+import AuthGuard from "./components/auth/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -25,10 +26,10 @@ const App = () => (
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Index />} />
-            <Route path="/report" element={<Report />} />
-            <Route path="/tracking" element={<Tracking />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/trending" element={<Trending />} />
+            <Route path="/report" element={<AuthGuard><Report /></AuthGuard>} />
+            <Route path="/tracking" element={<AuthGuard><Tracking /></AuthGuard>} />
+            <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
