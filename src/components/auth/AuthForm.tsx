@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type AuthMode = "login" | "register" | "verify";
 
@@ -50,7 +50,6 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Validate in real-time
     if (name === "email") {
       setErrors(prev => ({
         ...prev,
@@ -67,6 +66,10 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
         password: value.length < 8 ? "Password must be at least 8 characters" : ""
       }));
     }
+  };
+  
+  const handleConstituencyChange = (value: string) => {
+    setFormData(prev => ({ ...prev, constituency: value }));
   };
   
   const validateForm = () => {
@@ -111,11 +114,9 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
     setIsLoading(true);
     
     if (mode === "login") {
-      // Simulate API call for login
       setTimeout(() => {
         setIsLoading(false);
         
-        // For demo purposes, check if email format is valid
         if (emailRegex.test(formData.email)) {
           localStorage.setItem("auth", JSON.stringify({ 
             user: { 
@@ -141,18 +142,15 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
         }
       }, 1500);
     } else if (mode === "register") {
-      // Simulate API call for registration
       setTimeout(() => {
         setIsLoading(false);
         setMode("verify");
         
-        // Send verification code
         toast({
           title: "Verification code sent",
           description: `A verification code has been sent to ${formData.email} and ${formData.phone}.`,
         });
         
-        // Start progress bar animation for verification code expiry
         let progress = 0;
         const interval = setInterval(() => {
           progress += 1;
@@ -160,16 +158,13 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
           if (progress >= 100) {
             clearInterval(interval);
           }
-        }, 300); // 30 seconds total
-        
+        }, 300);
       }, 1500);
     } else if (mode === "verify") {
-      // Simulate API call for verification
       setTimeout(() => {
         setIsLoading(false);
         
         if (formData.verificationCode === "123456") {
-          // Register new user
           localStorage.setItem("auth", JSON.stringify({ 
             user: { 
               name: formData.name,
@@ -211,7 +206,6 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
       )}
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Registration fields */}
         {mode === "register" && (
           <>
             <div className="space-y-2">
@@ -269,25 +263,25 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
             <div className="space-y-2">
               <Label htmlFor="constituency">Constituency</Label>
               <div className="relative">
-                <select
-                  id="constituency"
-                  name="constituency"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+                <Select 
                   value={formData.constituency}
-                  onChange={handleChange}
-                  required
+                  onValueChange={handleConstituencyChange}
                 >
-                  {CONSTITUENCIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-                <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <SelectTrigger id="constituency" className="pl-10">
+                    <SelectValue placeholder="Select constituency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CONSTITUENCIES.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </>
         )}
         
-        {/* Verification fields */}
         {mode === "verify" && (
           <div className="space-y-2">
             <Label htmlFor="verificationCode">Verification Code</Label>
@@ -313,7 +307,6 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
           </div>
         )}
         
-        {/* Common fields for both login and register */}
         {(mode === "login" || mode === "register") && (
           <>
             <div className="space-y-2">
