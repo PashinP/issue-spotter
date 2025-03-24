@@ -102,6 +102,10 @@ export default {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' },
 				},
+				'pulse-light': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -112,9 +116,11 @@ export default {
 				'slide-out-right': 'slide-out-right 0.3s ease-in',
 				'slide-in-bottom': 'slide-in-bottom 0.5s ease-out',
 				'float': 'float 3s ease-in-out infinite',
+				'pulse-light': 'pulse-light 3s ease-in-out infinite',
 			},
 			fontFamily: {
 				sans: ['Inter var', 'Inter', 'sans-serif'],
+				montserrat: ['Montserrat', 'sans-serif'],
 			},
 			boxShadow: {
 				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
@@ -122,6 +128,8 @@ export default {
 				'glass-lg': '0 8px 40px rgba(0, 0, 0, 0.12)',
 				'neumorph': '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff',
 				'neumorph-sm': '3px 3px 6px #d1d1d1, -3px -3px 6px #ffffff',
+				'card': '0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08)',
+				'card-hover': '0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 5px rgba(0, 0, 0, 0.12)',
 			}
 		}
 	},

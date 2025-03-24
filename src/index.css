@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 222 47% 11%;
+    --primary: 215 80% 30%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96%;
@@ -24,7 +25,7 @@
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96%;
+    --accent: 215 70% 90%;
     --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
@@ -94,7 +95,19 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-montserrat;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl font-medium md:text-2xl;
   }
 }
 
@@ -137,7 +150,7 @@
   }
   
   .issue-card {
-    @apply rounded-xl border bg-card p-0 overflow-hidden transition-all duration-300 hover:shadow-md;
+    @apply rounded-xl border bg-card p-0 overflow-hidden transition-all duration-300 hover:shadow-md hover:border-primary/20;
   }
   
   .issue-status-pending {
@@ -154,15 +167,15 @@
   
   .hero-section {
     @apply relative rounded-xl overflow-hidden;
-    background-image: linear-gradient(135deg, rgba(49, 59, 85, 0.8) 0%, rgba(73, 97, 118, 0.8) 100%);
+    background-image: linear-gradient(135deg, rgba(28, 62, 131, 0.85) 0%, rgba(44, 90, 160, 0.85) 100%);
   }
   
   .section-title {
-    @apply text-2xl font-bold mb-2;
+    @apply text-2xl font-bold mb-2 font-montserrat;
   }
   
   .card-hover-effect {
-    @apply transition-all duration-300 hover:translate-y-[-2px];
+    @apply transition-all duration-300 hover:translate-y-[-2px] hover:shadow-md;
   }
   
   .civic-gradient {
@@ -171,6 +184,22 @@
   
   .cta-button {
     @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all shadow-sm hover:shadow-md;
+  }
+  
+  .quick-link-card {
+    @apply cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-primary/20 bg-white rounded-lg overflow-hidden;
+  }
+  
+  .quick-link-icon {
+    @apply p-2 rounded-full mb-2 mt-1 transition-all duration-300;
+  }
+  
+  .quick-link-card:hover .quick-link-icon {
+    @apply scale-110;
+  }
+  
+  .info-card {
+    @apply p-4 mb-6 flex items-center justify-between bg-gradient-to-r border cursor-pointer hover:shadow-md transition-colors shadow-sm rounded-lg;
   }
 }
 
@@ -261,6 +290,20 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Button hover effects */
+.button-effect {
+  @apply relative overflow-hidden;
+}
+
+.button-effect:after {
+  content: '';
+  @apply absolute top-0 h-full w-0 left-0 bg-white/20 transition-all duration-300;
+}
+
+.button-effect:hover:after {
+  @apply w-full;
 }
 
 /* Mobile optimizations */

@@ -6,6 +6,7 @@ import IssueFeed from "@/components/feed/IssueFeed";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import LoginCTA from "@/components/auth/LoginCTA";
 import { 
   PlusCircle, 
   TrendingUp, 
@@ -18,7 +19,10 @@ import {
   LineChart,
   SlidersHorizontal,
   HelpCircle,
-  LogIn
+  LogIn,
+  ArrowRight,
+  BarChart3,
+  AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -100,7 +104,7 @@ const Index = () => {
       title: "Authentication Required",
       description: `Please log in to ${action}`,
       action: (
-        <Button variant="default" size="sm" onClick={() => navigate("/login")}>
+        <Button variant="default" size="sm" onClick={() => navigate("/login")} className="button-effect">
           Sign In
         </Button>
       ),
@@ -116,10 +120,10 @@ const Index = () => {
   };
   
   const quickLinks = [
-    { icon: TrendingUp, label: "Trending Issues", color: "bg-pink-100 text-pink-600" },
+    { icon: TrendingUp, label: "Trending Issues", color: "bg-rose-100 text-rose-600" },
     { icon: MapPin, label: "Nearby Issues", color: "bg-blue-100 text-blue-600" },
-    { icon: Clock, label: "Recent Reports", color: "bg-orange-100 text-orange-600" },
-    { icon: CheckCircle, label: "Resolved Cases", color: "bg-green-100 text-green-600" },
+    { icon: Clock, label: "Recent Reports", color: "bg-amber-100 text-amber-600" },
+    { icon: CheckCircle, label: "Resolved Cases", color: "bg-emerald-100 text-emerald-600" },
     { icon: Star, label: "Rate Services", color: "bg-purple-100 text-purple-600" }
   ];
   
@@ -133,33 +137,46 @@ const Index = () => {
   
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="relative overflow-hidden rounded-xl mb-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-secondary/60"></div>
+      <div className="relative overflow-hidden rounded-xl mb-8 shadow-md">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-800/80 to-blue-600/90"></div>
         <img 
           src="https://images.unsplash.com/photo-1522543558187-768b6df7c25c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80" 
           alt="City skyline" 
-          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-30"
+          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
         />
         
         <div className="relative p-6 md:p-8">
           <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-foreground tracking-tight">Welcome to Citizen Connect</h1>
-            <p className="text-muted-foreground mb-6 text-base md:text-lg">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white tracking-tight">
+              Welcome to Citizen Connect
+            </h1>
+            <p className="text-white/90 mb-6 text-base md:text-lg">
               Empowering citizens to report civic issues, track government responses, 
               and build better communities through transparent engagement.
             </p>
             
             <div className="flex flex-wrap gap-3 mt-4">
-              <Button onClick={handleReportIssue} className="gap-1 shadow-md hover:shadow-lg transition-all">
+              <Button 
+                onClick={handleReportIssue} 
+                className="gap-1 shadow-lg hover:shadow-xl transition-all bg-white text-blue-700 hover:bg-white/90 button-effect"
+              >
                 <PlusCircle className="mr-1 h-4 w-4" />
                 Report Issue
               </Button>
               {isAuthenticated ? (
-                <Button variant="outline" onClick={() => navigate("/tracking")}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate("/tracking")}
+                  className="bg-blue-700/20 text-white border-white/30 hover:bg-blue-700/30 hover:text-white button-effect"
+                >
                   Track My Issues
                 </Button>
               ) : (
-                <Button variant="outline" onClick={() => navigate("/login")} className="gap-1">
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate("/login")} 
+                  className="gap-1 bg-blue-700/20 text-white border-white/30 hover:bg-blue-700/30 hover:text-white button-effect"
+                >
                   <LogIn className="mr-1 h-4 w-4" />
                   Sign In
                 </Button>
@@ -173,12 +190,12 @@ const Index = () => {
         {quickLinks.map((link, index) => (
           <Card 
             key={index} 
-            className="cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-muted"
+            className="quick-link-card"
             onClick={() => handleQuickLinkClick(link.label)}
           >
             <CardContent className="p-3 md:p-4 text-center">
               <div className="flex flex-col items-center">
-                <div className={cn("p-2 rounded-full mb-2 mt-1", link.color)}>
+                <div className={cn("quick-link-icon", link.color)}>
                   <link.icon className="h-5 w-5" />
                 </div>
                 <span className="text-xs font-medium">{link.label}</span>
@@ -201,7 +218,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="hidden md:flex gap-1"
+              className="hidden md:flex gap-1 hover:border-blue-300 hover:bg-blue-50"
               onClick={() => handleComingSoonFeature("Issue Analytics")}
             >
               <MessageSquare className="h-4 w-4" />
@@ -210,7 +227,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="hidden md:flex gap-1"
+              className="hidden md:flex gap-1 hover:border-blue-300 hover:bg-blue-50"
               onClick={() => handleComingSoonFeature("Community Statistics")}
             >
               <LineChart className="h-4 w-4" />
@@ -219,7 +236,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-1"
+              className="gap-1 hover:border-blue-300 hover:bg-blue-50"
               onClick={() => handleComingSoonFeature("Advanced Filters")}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -230,17 +247,17 @@ const Index = () => {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Card className="p-4 mb-6 flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200 text-orange-800 cursor-pointer hover:bg-orange-100 transition-colors shadow-sm hover:shadow-md">
+            <Card className="info-card from-blue-50 to-sky-50 border-blue-200 text-blue-800">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-100 p-2 rounded-full">
-                  <HelpCircle className="h-5 w-5 text-orange-500" />
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <HelpCircle className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <h3 className="font-medium">How it works</h3>
-                  <p className="text-sm text-orange-700">Report issues, upvote community concerns, and track resolution progress</p>
+                  <p className="text-sm text-blue-700">Report issues, upvote community concerns, and track resolution progress</p>
                 </div>
               </div>
-              <Button size="sm" variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-100">
+              <Button size="sm" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100 button-effect">
                 Learn More
               </Button>
             </Card>
@@ -254,8 +271,8 @@ const Index = () => {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-primary/10 p-2 rounded-full">
-                  <PlusCircle className="h-5 w-5 text-primary" />
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
+                  <PlusCircle className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Report an Issue</h4>
@@ -266,8 +283,8 @@ const Index = () => {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-primary/10 p-2 rounded-full">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Upvote Community Concerns</h4>
@@ -278,8 +295,8 @@ const Index = () => {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-primary/10 p-2 rounded-full">
-                  <Clock className="h-5 w-5 text-primary" />
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
+                  <Clock className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Track Resolution Progress</h4>
@@ -290,8 +307,8 @@ const Index = () => {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 bg-primary/10 p-2 rounded-full">
-                  <Star className="h-5 w-5 text-primary" />
+                <div className="flex-shrink-0 bg-blue-100 p-2 rounded-full">
+                  <Star className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">Rate Government Services</h4>
@@ -308,7 +325,12 @@ const Index = () => {
                 </Button>
               </DialogClose>
               {!isAuthenticated && (
-                <Button type="button" variant="default" onClick={() => navigate("/login")}>
+                <Button 
+                  type="button" 
+                  variant="default" 
+                  onClick={() => navigate("/login")}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   Sign In to Participate
                 </Button>
               )}
@@ -316,18 +338,33 @@ const Index = () => {
           </DialogContent>
         </Dialog>
         
-        <Separator className="mb-6" />
+        <Card className="info-card mt-4 from-amber-50 to-yellow-50 border-amber-200 text-amber-800">
+          <div className="flex items-center gap-3">
+            <div className="bg-amber-100 p-2 rounded-full">
+              <AlertCircle className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Community Statistics</h3>
+              <p className="text-sm text-amber-700">View issue resolution rates, response times, and department performance</p>
+            </div>
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="border-amber-300 text-amber-700 hover:bg-amber-100 button-effect"
+            onClick={() => handleComingSoonFeature("Community Statistics Dashboard")}
+          >
+            View Stats
+          </Button>
+        </Card>
+        
+        <Separator className="my-6" />
         
         <IssueFeed />
         
         {!isAuthenticated && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-secondary/10 rounded-lg border border-border/50 text-center">
-            <h3 className="text-lg font-medium mb-2">Ready to get involved?</h3>
-            <p className="text-muted-foreground mb-4">Sign in to report issues, engage with the community, and track resolutions</p>
-            <Button onClick={() => navigate("/login")} className="gap-2">
-              <LogIn className="h-4 w-4" />
-              Sign In to Participate
-            </Button>
+          <div className="mt-8">
+            <LoginCTA variant="prominent" />
           </div>
         )}
       </div>
