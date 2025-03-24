@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -344,7 +343,7 @@ const IssueReportForm = () => {
               <div className="space-y-2">
                 <Label htmlFor="location">Specific Location</Label>
                 <div className="relative">
-                  <Map className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                   <Input
                     id="location"
                     placeholder="e.g. Near ABC Mall, Sector 3, Rohini"
