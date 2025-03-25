@@ -19,7 +19,7 @@ const Report = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Report an Issue</h1>
         <p className="text-muted-foreground">
-          Submit your complaint to the relevant government department
+          Submit your complaint to the relevant government department or your local representative
         </p>
       </div>
       

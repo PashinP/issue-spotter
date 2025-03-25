@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { 
@@ -18,10 +17,15 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import {
-  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin, FileText
+  Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin, FileText,
+  User, BookOpen, Award, History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DEPARTMENTS, CONSTITUENCIES, getProblemTypes, IssueType } from "@/data/departments";
+import { 
+  DEPARTMENTS, CONSTITUENCIES, getProblemTypes, IssueType, 
+  getRepresentativeDetails, RepresentativeDetails 
+} from "@/data/departments";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type FormStep = "location" | "type" | "details" | "submit" | "success";
 
@@ -41,6 +45,13 @@ const IssueReportForm = () => {
     isAnonymous: false,
     customProblemName: "",
   });
+  const [representativeDetails, setRepresentativeDetails] = useState<RepresentativeDetails | null>(null);
+  
+  useEffect(() => {
+    if (formData.constituency) {
+      setRepresentativeDetails(getRepresentativeDetails(formData.constituency));
+    }
+  }, [formData.constituency]);
   
   const { toast } = useToast();
   
@@ -96,7 +107,6 @@ const IssueReportForm = () => {
         return;
       }
       
-      // If custom problem is selected but no name is provided
       if (formData.problemType === "custom" && !formData.customProblemName.trim()) {
         toast({
           title: "Please provide a name for your custom issue",
@@ -170,18 +180,15 @@ const IssueReportForm = () => {
     }, 2000);
   };
   
-  // Create a problem types array that always includes the custom option
   const getAllProblemTypes = () => {
     const departmentIssues = getProblemTypes(formData.department);
     
-    // Check if custom option is already in the list
     const hasCustomOption = departmentIssues.some(item => item.id === "custom");
     
     if (hasCustomOption) {
       return departmentIssues;
     }
     
-    // Add custom option
     return [
       ...departmentIssues,
       {
@@ -192,6 +199,8 @@ const IssueReportForm = () => {
       }
     ];
   };
+  
+  const showRepresentativeDetails = formData.department === "mla" && representativeDetails;
   
   return (
     <div className="max-w-3xl mx-auto">
@@ -231,6 +240,50 @@ const IssueReportForm = () => {
                   </SelectContent>
                 </Select>
               </div>
+              
+              {showRepresentativeDetails && (
+                <Alert className="bg-blue-50 border-blue-200 text-blue-800 mb-4">
+                  <User className="h-5 w-5" />
+                  <AlertTitle className="text-blue-800">Your Representative</AlertTitle>
+                  <AlertDescription className="text-blue-700">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <p className="text-sm font-medium flex items-center">
+                          <User className="h-4 w-4 mr-1" /> Name
+                        </p>
+                        <p className="text-sm">{representativeDetails.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium flex items-center">
+                          <Award className="h-4 w-4 mr-1" /> Party
+                        </p>
+                        <p className="text-sm">{representativeDetails.party}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium flex items-center">
+                          <BookOpen className="h-4 w-4 mr-1" /> Education
+                        </p>
+                        <p className="text-sm">{representativeDetails.education}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium flex items-center">
+                          <History className="h-4 w-4 mr-1" /> Background
+                        </p>
+                        <p className="text-sm line-clamp-2">{representativeDetails.history}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2">
+                      <p className="text-sm font-medium">Notable Initiatives</p>
+                      <ul className="text-sm list-disc pl-5 mt-1">
+                        {representativeDetails.initiatives.map((initiative, index) => (
+                          <li key={index}>{initiative}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
               
               <div className="space-y-2">
                 <Label>Government Department</Label>
