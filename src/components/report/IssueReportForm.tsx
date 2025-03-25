@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import {
   Check, Camera, Building2, ArrowLeft, ArrowRight, LoaderCircle, Shield, MapPin, FileText,
-  User, BookOpen, Award, History
+  User, BookOpen, Award, History, Construction, Bus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 

@@ -1,9 +1,8 @@
-
 import { 
   MapPin, Trash2, Construction, LightbulbOff, Plus, FileText,
   Building, Shield, AlertTriangle, Droplets, Zap, Wifi, 
   Map as MapIcon, Bus, Wind, Landmark, User, Briefcase,
-  BookOpen, GraduationCap, Stethoscope, Road, Bus as BusIcon
+  BookOpen, GraduationCap, Stethoscope
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -135,8 +134,8 @@ export const DEPARTMENTS: Department[] = [
     name: "MLA/MP Representative",
     issues: [
       { id: "budget", name: "Budget allocation concerns", icon: Briefcase, description: "Report issues with local budget allocation and spending" },
-      { id: "infrastructure", name: "Road and infrastructure", icon: Road, description: "Report infrastructure development needs in your area" },
-      { id: "transport", name: "Public transport issues", icon: BusIcon, description: "Report public transportation problems to your representative" },
+      { id: "infrastructure", name: "Road and infrastructure", icon: Construction, description: "Report infrastructure development needs in your area" },
+      { id: "transport", name: "Public transport issues", icon: Bus, description: "Report public transportation problems to your representative" },
       { id: "education", name: "Education concerns", icon: GraduationCap, description: "Report education-related issues in your constituency" },
       { id: "healthcare", name: "Healthcare concerns", icon: Stethoscope, description: "Report healthcare access or quality issues" },
       { id: "utilities", name: "Water and electricity", icon: Droplets, description: "Report utility supply problems to your representative" },
