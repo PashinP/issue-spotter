@@ -2,7 +2,7 @@
 import { 
   MapPin, Trash2, Construction, LightbulbOff, Plus, FileText,
   Building, Shield, AlertTriangle, Droplets, Zap, Wifi, 
-  Map as MapIcon // Rename Map to MapIcon to avoid conflict
+  Map as MapIcon, Bus, Wind, Landmark, User, Briefcase
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -52,18 +52,8 @@ export const DEPARTMENTS: Department[] = [
     ]
   },
   { 
-    id: "police", 
-    name: "Delhi Police",
-    issues: [
-      { id: "security", name: "Security concerns", icon: Shield, description: "Report security concerns in your area" },
-      { id: "traffic", name: "Traffic violations", icon: AlertTriangle, description: "Report persistent traffic rule violations" },
-      { id: "noise", name: "Noise pollution", icon: AlertTriangle, description: "Report excessive noise in residential areas" },
-      { id: "harassment", name: "Public harassment", icon: AlertTriangle, description: "Report harassment or disturbance in public areas" }
-    ]
-  },
-  { 
     id: "water", 
-    name: "Delhi Jal Board",
+    name: "Delhi Jal Board (DJB)",
     issues: [
       { id: "supply", name: "Water supply issues", icon: Droplets, description: "Report problems with water supply" },
       { id: "quality", name: "Water quality concerns", icon: Droplets, description: "Report issues with water quality" },
@@ -81,7 +71,65 @@ export const DEPARTMENTS: Department[] = [
       { id: "wiring", name: "Dangerous wiring", icon: AlertTriangle, description: "Report exposed or dangerous electrical wiring" }
     ]
   },
+  { 
+    id: "transport", 
+    name: "Transport Department",
+    issues: [
+      { id: "signals", name: "Traffic signal issues", icon: AlertTriangle, description: "Report broken or malfunctioning traffic signals" },
+      { id: "busservice", name: "Bus service problems", icon: Bus, description: "Report issues with public bus services" },
+      { id: "rto", name: "RTO-related issues", icon: FileText, description: "Report problems with vehicle registration or licensing" },
+      { id: "transport", name: "Public transport complaints", icon: Bus, description: "General complaints about public transportation" }
+    ]
+  },
+  { 
+    id: "dpcc", 
+    name: "Delhi Pollution Control Committee (DPCC)",
+    issues: [
+      { id: "air", name: "Air pollution", icon: Wind, description: "Report air pollution or smoke-related issues" },
+      { id: "noise", name: "Noise pollution", icon: AlertTriangle, description: "Report excessive noise from industrial or commercial activities" },
+      { id: "industrial", name: "Industrial waste", icon: Trash2, description: "Report improper disposal of industrial waste" },
+      { id: "environment", name: "Environmental hazards", icon: AlertTriangle, description: "Report environmental violations or concerns" }
+    ]
+  },
+  { 
+    id: "revenue", 
+    name: "Revenue Department (DMs, SDMs)",
+    issues: [
+      { id: "land", name: "Land disputes", icon: MapIcon, description: "Report land ownership or boundary disputes" },
+      { id: "certificates", name: "Certificate issues", icon: FileText, description: "Report problems with official certificates or documents" },
+      { id: "district", name: "District-level grievances", icon: Landmark, description: "Report issues that need district magistrate attention" },
+      { id: "revenue", name: "Revenue-related complaints", icon: FileText, description: "Issues related to land revenue or property taxes" }
+    ]
+  },
+  { 
+    id: "lg", 
+    name: "Lieutenant Governor's Office (LG)",
+    issues: [
+      { id: "governance", name: "Governance issues", icon: Landmark, description: "Report issues related to Delhi governance" },
+      { id: "listening", name: "LG Listening Post", icon: User, description: "Submit complaints directly to the LG's office" },
+      { id: "policy", name: "Policy implementation", icon: Briefcase, description: "Report issues with policy implementation" },
+      { id: "other", name: "Other LG-related issues", icon: FileText, description: "Other issues that need LG office attention" }
+    ]
+  },
+  { 
+    id: "cmo", 
+    name: "Chief Minister's Office (CMO)",
+    issues: [
+      { id: "pgms", name: "PGMS Delhi complaints", icon: FileText, description: "File complaints through Public Grievance Monitoring System" },
+      { id: "governance", name: "State governance issues", icon: Landmark, description: "Report issues related to state governance" },
+      { id: "policy", name: "State policy issues", icon: Briefcase, description: "Report problems with state policies" },
+      { id: "services", name: "Government service issues", icon: User, description: "Report issues with government services" }
+    ]
+  },
 ];
+
+export const CONSTITUENCIES = ["Rohini", "Dwarka", "Chandni Chowk", "Saket", "Mayur Vihar"];
+
+// Helper function to get problem types for a given department
+export const getProblemTypes = (departmentId: string) => {
+  const selectedDepartment = DEPARTMENTS.find(dept => dept.id === departmentId);
+  return selectedDepartment ? selectedDepartment.issues : GENERIC_PROBLEM_TYPES;
+};
 
 // Generic issues that can be used with any department
 export const GENERIC_PROBLEM_TYPES: IssueType[] = [
@@ -116,11 +164,3 @@ export const GENERIC_PROBLEM_TYPES: IssueType[] = [
     description: "File a different type of complaint not listed above"
   },
 ];
-
-export const CONSTITUENCIES = ["Rohini", "Dwarka", "Chandni Chowk", "Saket", "Mayur Vihar"];
-
-// Helper function to get problem types for a given department
-export const getProblemTypes = (departmentId: string) => {
-  const selectedDepartment = DEPARTMENTS.find(dept => dept.id === departmentId);
-  return selectedDepartment ? selectedDepartment.issues : GENERIC_PROBLEM_TYPES;
-};
