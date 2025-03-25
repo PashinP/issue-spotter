@@ -52,6 +52,10 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
     userVote: issue.userVote
   });
   
+  // Track image loading state
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
   const handleVote = (type: "up" | "down") => {
     setVotes(prev => {
       if (prev.userVote === type) {
@@ -122,20 +126,38 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
     );
   };
   
-  // Get reliable image URL based on issue type
+  // Improved image URL function with more reliable fallbacks
   const getIssueImageUrl = (type: string) => {
-    switch(type) {
-      case "pothole":
-        return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop";
-      case "garbage":
-        return "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop";
-      case "construction":
-        return "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop";
-      case "streetlight":
-        return "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop";
-      default:
-        return `https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
+    const fallbackImage = "https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop";
+    
+    try {
+      switch(type) {
+        case "pothole":
+          return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop";
+        case "garbage":
+          return "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop";
+        case "construction":
+          return "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop";
+        case "streetlight":
+          return "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop";
+        default:
+          return fallbackImage;
+      }
+    } catch (error) {
+      console.error("Error getting issue image URL:", error);
+      return fallbackImage;
     }
+  };
+  
+  // Handle image error
+  const handleImageError = () => {
+    console.log("Image failed to load for issue:", issue.id);
+    setImageError(true);
+  };
+  
+  // Handle image loaded successfully
+  const handleImageLoaded = () => {
+    setImageLoaded(true);
   };
   
   return (
@@ -204,13 +226,30 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
             </p>
             
             {issue.hasImage && (
-              <div className="rounded-md overflow-hidden mb-3 bg-muted/50 h-48 flex items-center justify-center">
-                <img 
-                  src={getIssueImageUrl(issue.type)}
-                  alt={issue.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+              <div className="rounded-md overflow-hidden mb-3 bg-muted/50 h-48 flex items-center justify-center relative">
+                {!imageLoaded && !imageError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <span className="text-muted-foreground text-sm">Loading image...</span>
+                  </div>
+                )}
+                {imageError ? (
+                  <div className="w-full h-full flex items-center justify-center bg-muted/80">
+                    <AlertTriangle className="h-8 w-8 text-muted-foreground opacity-60" />
+                    <span className="text-muted-foreground ml-2">Image unavailable</span>
+                  </div>
+                ) : (
+                  <img 
+                    src={getIssueImageUrl(issue.type)}
+                    alt={issue.title}
+                    className={cn(
+                      "w-full h-full object-cover",
+                      !imageLoaded && "opacity-0"
+                    )}
+                    loading="lazy"
+                    onError={handleImageError}
+                    onLoad={handleImageLoaded}
+                  />
+                )}
               </div>
             )}
             

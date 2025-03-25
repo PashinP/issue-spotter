@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +21,8 @@ import {
   LogIn,
   ArrowRight,
   BarChart3,
-  AlertCircle
+  AlertCircle,
+  ImageOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -58,6 +58,21 @@ const Index = () => {
         localStorage.setItem("welcomeShown", "true");
       }, 500);
     }
+    
+    // Preload common images to ensure they're available
+    const preloadImages = [
+      "https://images.unsplash.com/photo-1497295390343-6ded02d1d283?q=80&w=1500&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop"
+    ];
+    
+    preloadImages.forEach(url => {
+      const img = new Image();
+      img.src = url;
+    });
   }, [toast]);
   
   // Handle quick link clicks
@@ -135,6 +150,18 @@ const Index = () => {
     }
   };
   
+  // Image error handling
+  const handleBannerImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    console.error("Banner image failed to load");
+    e.currentTarget.classList.add("opacity-0");
+    
+    // Add a fallback background gradient
+    const parent = e.currentTarget.parentElement;
+    if (parent) {
+      parent.classList.add("bg-gradient-to-br", "from-blue-800", "to-blue-600");
+    }
+  };
+  
   return (
     <div className="max-w-4xl mx-auto">
       <div className="relative overflow-hidden rounded-xl mb-8 shadow-md">
@@ -143,6 +170,7 @@ const Index = () => {
           src="https://images.unsplash.com/photo-1497295390343-6ded02d1d283?q=80&w=1500&auto=format&fit=crop"
           alt="City skyline" 
           className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
+          onError={handleBannerImageError}
         />
         
         <div className="relative p-6 md:p-8">

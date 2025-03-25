@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { 
   CheckCircle2, Clock, Search, Star, MapPin, AlertTriangle,
-  ArrowUpRight, Hourglass, LoaderCircle, FileCheck, User, Calendar
+  ArrowUpRight, Hourglass, LoaderCircle, FileCheck, User, Calendar,
+  ImageOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Issue } from "../feed/IssueCard";
@@ -29,6 +31,7 @@ const IssueTracker = () => {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [imageStates, setImageStates] = useState<Record<string, { loaded: boolean, error: boolean }>>({});
   
   const { toast } = useToast();
   
@@ -59,6 +62,15 @@ const IssueTracker = () => {
     }
     
     setFilteredIssues(result);
+    
+    // Initialize image states for new issues
+    const initialStates: Record<string, { loaded: boolean, error: boolean }> = { ...imageStates };
+    result.forEach(issue => {
+      if (!initialStates[issue.id]) {
+        initialStates[issue.id] = { loaded: false, error: false };
+      }
+    });
+    setImageStates(initialStates);
   }, [issues, searchQuery, activeTab]);
 
   const handleFeedbackSubmitted = () => {
@@ -74,6 +86,45 @@ const IssueTracker = () => {
       title: "Feedback submitted",
       description: "Thank you for rating the department's service",
     });
+  };
+  
+  // Handle image error
+  const handleImageError = (issueId: string) => {
+    console.log("Image failed to load for issue:", issueId);
+    setImageStates(prev => ({
+      ...prev,
+      [issueId]: { ...prev[issueId], error: true }
+    }));
+  };
+  
+  // Handle image loaded successfully
+  const handleImageLoaded = (issueId: string) => {
+    setImageStates(prev => ({
+      ...prev,
+      [issueId]: { ...prev[issueId], loaded: true }
+    }));
+  };
+  
+  // Get a reliable image URL based on issue type
+  const getIssueImageUrl = (issue: Issue) => {
+    try {
+      const baseUrl = "https://images.unsplash.com/";
+      switch(issue.type) {
+        case "pothole":
+          return `${baseUrl}photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop`;
+        case "garbage":
+          return `${baseUrl}photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop`;
+        case "construction":
+          return `${baseUrl}photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop`;
+        case "streetlight":
+          return `${baseUrl}photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop`;
+        default:
+          return `${baseUrl}photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
+      }
+    } catch (error) {
+      console.error("Error getting issue image URL:", error);
+      return `${baseUrl}photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
+    }
   };
 
   return (
@@ -248,7 +299,7 @@ const IssueTracker = () => {
       
       <Dialog open={!!selectedIssue && !showFeedbackModal} onOpenChange={(open) => !open && setSelectedIssue(null)}>
         {selectedIssue && (
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
                 <Badge 
@@ -288,12 +339,30 @@ const IssueTracker = () => {
             <p className="text-sm">{selectedIssue.description}</p>
             
             {selectedIssue.hasImage && (
-              <div className="rounded-md overflow-hidden bg-muted/50">
-                <img 
-                  src={`https://source.unsplash.com/random/800x600?${selectedIssue.type}`} 
-                  alt={selectedIssue.title}
-                  className="w-full h-auto object-cover"
-                />
+              <div className="rounded-md overflow-hidden bg-muted/50 relative">
+                {!imageStates[selectedIssue.id]?.loaded && !imageStates[selectedIssue.id]?.error && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <span className="text-muted-foreground text-sm">Loading image...</span>
+                  </div>
+                )}
+                
+                {imageStates[selectedIssue.id]?.error ? (
+                  <div className="w-full h-48 flex items-center justify-center bg-muted/80">
+                    <ImageOff className="h-8 w-8 text-muted-foreground opacity-60 mr-2" />
+                    <span className="text-muted-foreground">Image unavailable</span>
+                  </div>
+                ) : (
+                  <img 
+                    src={getIssueImageUrl(selectedIssue)} 
+                    alt={selectedIssue.title}
+                    className={cn(
+                      "w-full h-auto object-cover max-h-64",
+                      !imageStates[selectedIssue.id]?.loaded && "opacity-0"
+                    )}
+                    onError={() => handleImageError(selectedIssue.id)}
+                    onLoad={() => handleImageLoaded(selectedIssue.id)}
+                  />
+                )}
               </div>
             )}
             

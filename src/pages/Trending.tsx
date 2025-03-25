@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users, ArrowUp, MessageSquare, Clock, MapPin, Send, User, Calendar, Share2 } from "lucide-react";
+import { TrendingUp, Users, ArrowUp, MessageSquare, Clock, MapPin, Send, User, Calendar, Share2, ImageOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Issue } from "@/components/feed/IssueCard";
@@ -29,6 +29,7 @@ const TrendingIssues = () => {
   const { toast } = useToast();
   const [selectedIssue, setSelectedIssue] = useState<TrendingIssue | null>(null);
   const [commentText, setCommentText] = useState("");
+  const [imageStates, setImageStates] = useState<Record<number, { loaded: boolean, error: boolean }>>({});
   
   // Check if user is authenticated
   const isAuthenticated = localStorage.getItem("auth") !== null;
@@ -38,6 +39,13 @@ const TrendingIssues = () => {
     if (!isAuthenticated) {
       window.location.href = "/login";
     }
+    
+    // Initialize image states
+    const initialStates: Record<number, { loaded: boolean, error: boolean }> = {};
+    trendingIssues.forEach(issue => {
+      initialStates[issue.id] = { loaded: false, error: false };
+    });
+    setImageStates(initialStates);
   }, [isAuthenticated]);
   
   // Sample trending issues data
@@ -138,9 +146,32 @@ const TrendingIssues = () => {
     }
   };
   
-  // Function to handle image loading errors
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+  // Function to handle image loading errors with improved fallback
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, issueId: number) => {
+    console.log("Image failed to load for issue:", issueId);
+    setImageStates(prev => ({
+      ...prev,
+      [issueId]: { ...prev[issueId], error: true }
+    }));
+  };
+  
+  // Function to handle successful image loading
+  const handleImageLoad = (issueId: number) => {
+    setImageStates(prev => ({
+      ...prev,
+      [issueId]: { ...prev[issueId], loaded: true }
+    }));
+  };
+  
+  // Get a reliable fallback image based on issue ID
+  const getFallbackImage = (issueId: number) => {
+    const fallbackImages = [
+      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517178271410-0b2a6480952c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    ];
+    
+    return fallbackImages[issueId % fallbackImages.length];
   };
   
   if (!isAuthenticated) {
@@ -187,13 +218,30 @@ const TrendingIssues = () => {
             
             {issue.image && (
               <div className="px-6 pb-3">
-                <div className="w-full h-48 rounded-md overflow-hidden bg-muted/50">
-                  <img 
-                    src={issue.image} 
-                    alt={issue.title}
-                    className="w-full h-full object-cover"
-                    onError={handleImageError}
-                  />
+                <div className="w-full h-48 rounded-md overflow-hidden bg-muted/50 relative">
+                  {!imageStates[issue.id]?.loaded && !imageStates[issue.id]?.error && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                      <span className="text-muted-foreground text-sm">Loading image...</span>
+                    </div>
+                  )}
+                  
+                  {imageStates[issue.id]?.error ? (
+                    <div className="w-full h-full flex items-center justify-center bg-muted/80">
+                      <ImageOff className="h-8 w-8 text-muted-foreground opacity-60 mr-2" />
+                      <span className="text-muted-foreground">Image unavailable</span>
+                    </div>
+                  ) : (
+                    <img 
+                      src={issue.image} 
+                      alt={issue.title}
+                      className={cn(
+                        "w-full h-full object-cover",
+                        !imageStates[issue.id]?.loaded && "opacity-0"
+                      )}
+                      onError={(e) => handleImageError(e, issue.id)}
+                      onLoad={() => handleImageLoad(issue.id)}
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -283,13 +331,21 @@ const TrendingIssues = () => {
                 <p className="text-sm text-muted-foreground">{selectedIssue.description}</p>
                 
                 {selectedIssue.image && (
-                  <div className="rounded-md overflow-hidden bg-muted/50">
-                    <img 
-                      src={selectedIssue.image} 
-                      alt={selectedIssue.title}
-                      className="w-full h-auto object-cover"
-                      onError={handleImageError}
-                    />
+                  <div className="rounded-md overflow-hidden bg-muted/50 relative">
+                    {imageStates[selectedIssue.id]?.error ? (
+                      <div className="w-full h-64 flex items-center justify-center bg-muted/80">
+                        <ImageOff className="h-8 w-8 text-muted-foreground opacity-60 mr-2" />
+                        <span className="text-muted-foreground">Image unavailable</span>
+                      </div>
+                    ) : (
+                      <img 
+                        src={selectedIssue.image} 
+                        alt={selectedIssue.title}
+                        className="w-full h-auto object-cover max-h-96"
+                        onError={(e) => handleImageError(e, selectedIssue.id)}
+                        onLoad={() => handleImageLoad(selectedIssue.id)}
+                      />
+                    )}
                   </div>
                 )}
                 
