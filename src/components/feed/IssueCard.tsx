@@ -122,9 +122,25 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
     );
   };
   
+  // Get reliable image URL based on issue type
+  const getIssueImageUrl = (type: string) => {
+    switch(type) {
+      case "pothole":
+        return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop";
+      case "garbage":
+        return "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop";
+      case "construction":
+        return "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop";
+      case "streetlight":
+        return "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop";
+      default:
+        return `https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
+    }
+  };
+  
   return (
     <div 
-      className="rounded-xl transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] border bg-card p-0 overflow-hidden"
+      className="rounded-xl transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] border bg-card p-0 overflow-hidden cursor-pointer"
       onClick={onClick}
     >
       <div className="p-4">
@@ -190,16 +206,7 @@ const IssueCard = ({ issue, onClick }: IssueCardProps) => {
             {issue.hasImage && (
               <div className="rounded-md overflow-hidden mb-3 bg-muted/50 h-48 flex items-center justify-center">
                 <img 
-                  src={issue.type === "pothole" 
-                    ? "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                    : issue.type === "garbage" 
-                    ? "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : issue.type === "construction"
-                    ? "https://images.unsplash.com/photo-1503387837-b154d5074bd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : issue.type === "streetlight"
-                    ? "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    : `https://source.unsplash.com/random/800x600?${issue.type}`
-                  }
+                  src={getIssueImageUrl(issue.type)}
                   alt={issue.title}
                   className="w-full h-full object-cover"
                   loading="lazy"

@@ -140,7 +140,7 @@ const Index = () => {
       <div className="relative overflow-hidden rounded-xl mb-8 shadow-md">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-800/80 to-blue-600/90"></div>
         <img 
-          src="https://images.unsplash.com/photo-1522543558187-768b6df7c25c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80" 
+          src="https://images.unsplash.com/photo-1497295390343-6ded02d1d283?q=80&w=1500&auto=format&fit=crop"
           alt="City skyline" 
           className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
         />

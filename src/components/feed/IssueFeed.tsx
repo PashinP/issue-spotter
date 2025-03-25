@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils"; // Added missing import for cn utility
+import { cn } from "@/lib/utils";
 import { 
   MapPin, Search, Filter, User, MessageCircle, ThumbsUp, 
   Clock, Star, SlidersHorizontal, ArrowUpDown, Check,
@@ -33,6 +33,15 @@ const IssueFeed = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [commentText, setCommentText] = useState("");
+  const [userRating, setUserRating] = useState<{
+    responseTime: number;
+    workQuality: number;
+    satisfaction: number;
+  }>({
+    responseTime: 0,
+    workQuality: 0,
+    satisfaction: 0
+  });
   const [filters, setFilters] = useState({
     departments: [] as string[],
     types: [] as string[],
@@ -136,6 +145,54 @@ const IssueFeed = () => {
         title: "Comment added",
         description: "Your comment has been added successfully."
       });
+    }
+  };
+  
+  const submitRating = () => {
+    if (!selectedIssue) return;
+    
+    if (selectedIssue.status === "resolved") {
+      const newRating = {
+        responseTime: userRating.responseTime,
+        workQuality: userRating.workQuality,
+        satisfaction: userRating.satisfaction,
+        comment: commentText.trim() || undefined
+      };
+      
+      const updatedIssue = {
+        ...selectedIssue,
+        rating: newRating
+      };
+      
+      const updatedIssues = issues.map(issue => 
+        issue.id === selectedIssue.id ? updatedIssue : issue
+      );
+      
+      setIssues(updatedIssues);
+      setFilteredIssues(updatedIssues);
+      setSelectedIssue(updatedIssue);
+      setCommentText("");
+      
+      toast({
+        title: "Rating submitted",
+        description: "Thank you for your feedback on this resolved issue."
+      });
+    }
+  };
+  
+  // Function to get reliable image URL for the selected issue
+  const getIssueImageUrl = (type: string) => {
+    switch(type) {
+      case "pothole":
+        return "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop";
+      case "garbage":
+        return "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?q=80&w=800&auto=format&fit=crop";
+      case "construction":
+        return "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=800&auto=format&fit=crop";
+      case "streetlight":
+        return "https://images.unsplash.com/photo-1551405780-3c5faab76c4a?q=80&w=800&auto=format&fit=crop";
+      default:
+        return `https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
     }
   };
   
@@ -327,8 +384,8 @@ const IssueFeed = () => {
       
       <Dialog open={!!selectedIssue} onOpenChange={(open) => !open && setSelectedIssue(null)}>
         {selectedIssue && (
-          <DialogContent className="sm:max-w-2xl">
-            <DialogHeader>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-5">
+            <DialogHeader className="mb-4">
               <div className="flex items-center gap-2 mb-1">
                 <Badge className="rounded-full px-2 py-0 text-xs">
                   {selectedIssue.department}
@@ -382,24 +439,24 @@ const IssueFeed = () => {
               </div>
             </DialogHeader>
             
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               {selectedIssue.description}
             </p>
             
             {selectedIssue.hasImage && (
-              <div className="rounded-md overflow-hidden my-2 bg-muted/50">
+              <div className="rounded-md overflow-hidden my-4 border border-muted bg-muted/50">
                 <img 
-                  src={`https://source.unsplash.com/random/800x600?${selectedIssue.type}`} 
+                  src={getIssueImageUrl(selectedIssue.type)}
                   alt={selectedIssue.title}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto max-h-[300px] object-cover"
                   loading="lazy"
                 />
               </div>
             )}
             
             {selectedIssue.officialResponse && (
-              <div className="bg-accent/50 rounded-md p-3 text-sm">
-                <div className="flex items-center gap-2 text-primary font-medium mb-1">
+              <div className="bg-accent/50 rounded-md p-4 my-4 text-sm">
+                <div className="flex items-center gap-2 text-primary font-medium mb-2">
                   <Badge variant="outline" className="bg-primary/10">Official Response</Badge>
                 </div>
                 <p className="text-muted-foreground">{selectedIssue.officialResponse}</p>
@@ -407,8 +464,8 @@ const IssueFeed = () => {
             )}
             
             {selectedIssue.rating && selectedIssue.status === "resolved" && (
-              <div className="bg-muted/30 rounded-md p-3">
-                <div className="flex items-center justify-between mb-2">
+              <div className="bg-muted/30 rounded-md p-4 my-4">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">
                       {selectedIssue.isAnonymous ? "Anonymous Rating" : "User Rating"}
@@ -416,7 +473,7 @@ const IssueFeed = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground mb-1">Response Time</p>
                     <RatingStars
@@ -444,14 +501,14 @@ const IssueFeed = () => {
                 </div>
                 
                 {selectedIssue.rating.comment && (
-                  <p className="text-xs text-muted-foreground mt-2 italic">
+                  <p className="text-sm text-muted-foreground mt-3 italic">
                     "{selectedIssue.rating.comment}"
                   </p>
                 )}
               </div>
             )}
             
-            <Separator />
+            <Separator className="my-4" />
             
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -490,7 +547,54 @@ const IssueFeed = () => {
                 </div>
               </div>
               
-              <div className="space-y-2">
+              {selectedIssue.status === "resolved" && !selectedIssue.rating && (
+                <div className="bg-muted/30 rounded-md p-4 my-4">
+                  <h4 className="text-sm font-medium mb-3">Rate this resolution</h4>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-4">
+                    <div>
+                      <p className="text-muted-foreground mb-1">Response Time</p>
+                      <RatingStars
+                        initialRating={userRating.responseTime}
+                        size="md"
+                        onChange={(rating) => setUserRating(prev => ({...prev, responseTime: rating}))}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Work Quality</p>
+                      <RatingStars
+                        initialRating={userRating.workQuality}
+                        size="md"
+                        onChange={(rating) => setUserRating(prev => ({...prev, workQuality: rating}))}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Satisfaction</p>
+                      <RatingStars
+                        initialRating={userRating.satisfaction}
+                        size="md"
+                        onChange={(rating) => setUserRating(prev => ({...prev, satisfaction: rating}))}
+                      />
+                    </div>
+                  </div>
+                  
+                  <Textarea
+                    placeholder="Add comments about your experience (optional)..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="mb-3"
+                  />
+                  
+                  <Button
+                    onClick={submitRating}
+                    disabled={!userRating.responseTime || !userRating.workQuality || !userRating.satisfaction}
+                  >
+                    Submit Rating
+                  </Button>
+                </div>
+              )}
+              
+              <div className="space-y-3">
                 <p className="text-sm font-medium">Add a comment</p>
                 <div className="flex items-start gap-2">
                   <Textarea 
@@ -501,30 +605,7 @@ const IssueFeed = () => {
                   />
                   <Button 
                     size="icon" 
-                    onClick={() => {
-                      if (!commentText.trim()) return;
-                      
-                      if (selectedIssue) {
-                        const updatedIssue = {
-                          ...selectedIssue,
-                          comments: selectedIssue.comments + 1
-                        };
-                        
-                        const updatedIssues = issues.map(issue => 
-                          issue.id === selectedIssue.id ? updatedIssue : issue
-                        );
-                        
-                        setIssues(updatedIssues);
-                        setFilteredIssues(updatedIssues);
-                        setSelectedIssue(updatedIssue);
-                        setCommentText("");
-                        
-                        toast({
-                          title: "Comment added",
-                          description: "Your comment has been added successfully."
-                        });
-                      }
-                    }}
+                    onClick={submitComment}
                     disabled={!commentText.trim()}
                   >
                     <Send className="h-4 w-4" />
