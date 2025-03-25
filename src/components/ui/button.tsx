@@ -113,6 +113,28 @@ if (typeof document !== "undefined") {
     button:hover::after {
       left: 100%;
     }
+    
+    /* Additional styles for improved image handling */
+    .issue-image {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .issue-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .issue-image:hover::before {
+      opacity: 1;
+    }
   `;
   document.head.appendChild(style);
 }
