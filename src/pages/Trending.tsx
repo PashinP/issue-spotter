@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, ArrowUp, MessageSquare, Clock, MapPin, Send, User, Calendar, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Issue } from "@/components/feed/IssueCard";
 
-interface Issue {
+// Define a custom type for Trending issues
+interface TrendingIssue {
   id: number;
   title: string;
   description: string;
@@ -25,7 +27,7 @@ interface Issue {
 
 const TrendingIssues = () => {
   const { toast } = useToast();
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [selectedIssue, setSelectedIssue] = useState<TrendingIssue | null>(null);
   const [commentText, setCommentText] = useState("");
   
   // Check if user is authenticated
@@ -39,7 +41,7 @@ const TrendingIssues = () => {
   }, [isAuthenticated]);
   
   // Sample trending issues data
-  const trendingIssues = [
+  const trendingIssues: TrendingIssue[] = [
     {
       id: 1,
       title: "Water shortage in Rohini Sector 3",
@@ -108,7 +110,7 @@ const TrendingIssues = () => {
     });
   };
   
-  const handleViewDetails = (issue: Issue) => {
+  const handleViewDetails = (issue: TrendingIssue) => {
     setSelectedIssue(issue);
   };
   
@@ -123,7 +125,7 @@ const TrendingIssues = () => {
     setCommentText("");
   };
   
-  const getStatusBadgeClass = (status?: string) => {
+  const getStatusBadgeClass = (status?: "pending" | "in_progress" | "resolved") => {
     switch (status) {
       case "pending":
         return "bg-yellow-500 text-white";
