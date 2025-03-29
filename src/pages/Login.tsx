@@ -6,11 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, CheckCircle, Building2, MapPin, ArrowRight, ChevronDown, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// City-themed background images
+// Updated civic engagement themed background images
 const bgImages = [
-  "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80", // City nightscape
-  "https://images.unsplash.com/photo-1543536448-1e76fc2795bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80", // Urban landscape
-  "https://images.unsplash.com/photo-1444084316824-dc26d6657664?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80"  // City view
+  "https://images.unsplash.com/photo-1493397212122-2b85dda8106b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80", // Modern urban architecture
+  "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80", // Community engagement
+  "https://images.unsplash.com/photo-1460574283810-2aab119d8511?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80"  // City perspective
 ];
 
 const Login = () => {
@@ -106,11 +106,10 @@ const Login = () => {
           <div className="text-white space-y-8">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 font-poppins tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
-                Your Voice Shapes Your City
+                जनConnect
               </h1>
               <p className="text-xl font-light mb-8 text-white/90 font-inter max-w-lg">
-                Join thousands of citizens making an impact in their communities through 
-                collaborative civic engagement.
+                Empower Your City. Report. Track. Transform.
               </p>
             </div>
             
@@ -135,6 +134,16 @@ const Login = () => {
                   <span className="text-sm font-inter">Interactive maps</span>
                 </CardContent>
               </Card>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-lg font-medium mb-4 text-white/80 font-poppins">
+                Your Direct Link to Civic Action
+              </p>
+              <p className="text-white/70 text-sm">
+                Join thousands of citizens making an impact in their communities through 
+                collaborative civic engagement. Together we build better cities.
+              </p>
             </div>
           </div>
           
@@ -183,6 +192,13 @@ const Login = () => {
               aria-label={`View image ${index + 1}`}
             />
           ))}
+        </div>
+        
+        {/* Footer text */}
+        <div className="absolute bottom-3 w-full text-center z-20">
+          <p className="text-white/60 text-sm font-inter">
+            Built by the Community, for the Community
+          </p>
         </div>
       </div>
     </div>
