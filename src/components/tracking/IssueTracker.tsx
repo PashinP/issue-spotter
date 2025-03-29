@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,6 @@ const IssueTracker = () => {
     
     setFilteredIssues(result);
     
-    // Initialize image states for new issues
     const initialStates: Record<string, { loaded: boolean, error: boolean }> = { ...imageStates };
     result.forEach(issue => {
       if (!initialStates[issue.id]) {
@@ -88,7 +86,6 @@ const IssueTracker = () => {
     });
   };
   
-  // Handle image error
   const handleImageError = (issueId: string) => {
     console.log("Image failed to load for issue:", issueId);
     setImageStates(prev => ({
@@ -97,7 +94,6 @@ const IssueTracker = () => {
     }));
   };
   
-  // Handle image loaded successfully
   const handleImageLoaded = (issueId: string) => {
     setImageStates(prev => ({
       ...prev,
@@ -105,7 +101,6 @@ const IssueTracker = () => {
     }));
   };
   
-  // Get a reliable image URL based on issue type
   const getIssueImageUrl = (issue: Issue) => {
     try {
       const baseUrl = "https://images.unsplash.com/";
@@ -123,7 +118,7 @@ const IssueTracker = () => {
       }
     } catch (error) {
       console.error("Error getting issue image URL:", error);
-      return `${baseUrl}photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop`;
+      return "https://images.unsplash.com/photo-1517178271410-0b2a6480952c?q=80&w=800&auto=format&fit=crop";
     }
   };
 
