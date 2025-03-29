@@ -62,6 +62,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				community: {
+					teal: '#26A69A',
+					lightGray: '#ECEFF1',
+					border: '#CFD8DC'
 				}
 			},
 			fontFamily: {
