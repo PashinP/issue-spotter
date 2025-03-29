@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Mail, Lock, ArrowRight, 
-  LoaderCircle, EyeOff, Eye, 
-  MessageSquare, GithubIcon, KeyRound,
-  Phone, Shield, User, MapPin
+  MapPin, User, Mail, Phone, Lock, ArrowRight, 
+  LoaderCircle, Shield, EyeOff, Eye, 
+  MessageSquare, GithubIcon, KeyRound
 } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type AuthMode = "login" | "register" | "verify" | "otp";
@@ -27,6 +27,7 @@ interface AuthFormProps {
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const phoneRegex = /^[0-9]{10}$/;
 
+// Custom social button component for consistency
 const SocialButton = ({ children, onClick, icon, label }: { 
   children: React.ReactNode, 
   onClick: () => void, 
@@ -36,7 +37,7 @@ const SocialButton = ({ children, onClick, icon, label }: {
   <button
     type="button"
     onClick={onClick}
-    className="flex items-center justify-center gap-2 w-full p-2.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-all text-gray-700 font-medium"
+    className="flex items-center justify-center gap-2 w-full p-2.5 border border-white/20 dark:border-white/10 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all text-white/90 font-medium"
     aria-label={label}
   >
     {icon}
@@ -277,31 +278,31 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
   };
   
   return (
-    <div className="w-full max-w-md mx-auto text-gray-800 font-poppins">
+    <div className="w-full max-w-md mx-auto text-white/90">
       {mode === "verify" && (
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-600">Verification code expires in:</span>
+            <span className="text-white/80">Verification code expires in:</span>
             <span className="font-medium">{Math.floor((100 - verificationProgress) * 0.3)} seconds</span>
           </div>
-          <Progress value={verificationProgress} className="h-2 bg-gray-100" />
+          <Progress value={verificationProgress} className="h-2 bg-white/10" />
         </div>
       )}
       
       {mode === "otp" ? (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 font-poppins">Login with OTP</h3>
+          <h3 className="text-xl font-semibold mb-4 text-white/90 font-poppins">Login with OTP</h3>
           
           <div className="space-y-2">
-            <Label htmlFor="otpPhone" className="text-gray-700 font-medium">Phone Number</Label>
+            <Label htmlFor="otpPhone" className="text-white/80 font-medium">Phone Number</Label>
             <div className="relative">
-              <Phone className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
               <Input
                 id="otpPhone"
                 name="otpPhone"
                 type="tel"
                 placeholder="Enter your phone number"
-                className="pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg"
+                className="pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg"
                 value={formData.otpPhone}
                 onChange={handleChange}
                 required
@@ -311,7 +312,7 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
           
           <Button 
             type="submit" 
-            className="w-full mt-6 group bg-[#26A69A] hover:bg-[#26A69A]/90 rounded-lg font-medium transition-transform hover:scale-[1.05]"
+            className="w-full mt-6 group bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 rounded-lg font-medium"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -329,7 +330,7 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
               variant="link" 
               type="button"
               onClick={() => setMode("login")}
-              className="text-sm text-[#26A69A] hover:text-[#26A69A]/80"
+              className="text-sm text-white/70 hover:text-white"
             >
               Back to Login
             </Button>
@@ -338,31 +339,31 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
       ) : mode === "verify" ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="verificationCode" className="text-gray-700 font-medium">Verification Code</Label>
+            <Label htmlFor="verificationCode" className="text-white/80 font-medium">Verification Code</Label>
             <div className="relative">
-              <Shield className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Shield className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
               <Input
                 id="verificationCode"
                 name="verificationCode"
                 type="text"
                 placeholder="Enter 6-digit code"
-                className="pl-10 text-center tracking-widest border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg"
+                className="pl-10 text-center tracking-widest border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg"
                 value={formData.verificationCode}
                 onChange={handleChange}
                 required
                 maxLength={6}
               />
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-white/60">
               Enter the 6-digit code we sent to your email and phone number.
               <br />
-              <span className="font-semibold text-gray-600">(For demo, use code: 123456)</span>
+              <span className="font-semibold text-white/80">(For demo, use code: 123456)</span>
             </p>
           </div>
           
           <Button 
             type="submit" 
-            className="w-full mt-6 group bg-[#26A69A] hover:bg-[#26A69A]/90 rounded-lg font-medium transition-transform hover:scale-[1.05]"
+            className="w-full mt-6 group bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 rounded-lg font-medium"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -383,7 +384,7 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
                 setMode(formData.otpPhone ? "otp" : "register");
               }}
               type="button"
-              className="text-sm text-[#26A69A] hover:text-[#26A69A]/80"
+              className="text-sm text-white/70 hover:text-white"
             >
               Back to {formData.otpPhone ? "OTP Login" : "Registration"}
             </Button>
@@ -394,15 +395,15 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
           {mode === "register" && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
+                <Label htmlFor="name" className="text-white/80 font-medium">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  <User className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
                   <Input
                     id="name"
                     name="name"
                     type="text"
                     placeholder="John Smith"
-                    className="pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg transition-all duration-300"
+                    className="pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg transition-all duration-300"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -411,33 +412,33 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-gray-700 font-medium">Phone Number</Label>
+                <Label htmlFor="phone" className="text-white/80 font-medium">Phone Number</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
                   <Input
                     id="phone"
                     name="phone"
                     type="tel"
                     placeholder="9876543210"
-                    className={cn("pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg transition-all duration-300", errors.phone && "border-red-500")}
+                    className={cn("pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg transition-all duration-300", errors.phone && "border-red-500/50")}
                     value={formData.phone}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
+                {errors.phone && <p className="text-xs text-red-400">{errors.phone}</p>}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="address" className="text-gray-700 font-medium">Address</Label>
+                <Label htmlFor="address" className="text-white/80 font-medium">Address</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
                   <Input
                     id="address"
                     name="address"
                     type="text"
                     placeholder="123 Main Street"
-                    className="pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg transition-all duration-300"
+                    className="pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg transition-all duration-300"
                     value={formData.address}
                     onChange={handleChange}
                     required
@@ -446,19 +447,19 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="constituency" className="text-gray-700 font-medium">Constituency</Label>
+                <Label htmlFor="constituency" className="text-white/80 font-medium">Constituency</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 z-10" />
+                  <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-white/50 z-10" />
                   <Select 
                     value={formData.constituency}
                     onValueChange={handleConstituencyChange}
                   >
-                    <SelectTrigger id="constituency" className="pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] text-gray-800 rounded-lg">
+                    <SelectTrigger id="constituency" className="pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white rounded-lg">
                       <SelectValue placeholder="Select constituency" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-[#CFD8DC] text-gray-800 rounded-lg">
+                    <SelectContent className="bg-gray-800/90 backdrop-blur-xl border-white/10 text-white rounded-lg">
                       {CONSTITUENCIES.map((c) => (
-                        <SelectItem key={c} value={c} className="focus:bg-[#26A69A]/10 focus:text-[#26A69A]">{c}</SelectItem>
+                        <SelectItem key={c} value={c} className="focus:bg-white/10 focus:text-white">{c}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -470,51 +471,51 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
           {(mode === "login" || mode === "register") && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-medium">Email Address</Label>
+                <Label htmlFor="email" className="text-white/80 font-medium">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     placeholder="you@example.com"
-                    className={cn("pl-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg transition-all duration-300", errors.email && "border-red-500")}
+                    className={cn("pl-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg transition-all duration-300", errors.email && "border-red-500/50")}
                     value={formData.email}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+                {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-white/80 font-medium">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className={cn("pl-10 pr-10 border-[#CFD8DC] bg-white focus:border-[#26A69A] focus:ring-[#26A69A] text-gray-800 placeholder:text-gray-400 rounded-lg transition-all duration-300", errors.password && "border-red-500")}
+                    className={cn("pl-10 pr-10 border-white/10 bg-white/5 focus:border-white/30 text-white placeholder:text-white/40 rounded-lg transition-all duration-300", errors.password && "border-red-500/50")}
                     value={formData.password}
                     onChange={handleChange}
                     required
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-2.5 text-white/50 hover:text-white/80"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
+                {errors.password && <p className="text-xs text-red-400">{errors.password}</p>}
               </div>
               
               <Button 
                 type="submit" 
-                className="w-full mt-6 group bg-[#26A69A] hover:bg-[#26A69A]/90 rounded-lg font-medium shadow-md shadow-[#26A69A]/20 transition-transform hover:scale-[1.05] text-white py-6"
+                className="w-full mt-6 group bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 rounded-lg font-medium shadow-lg shadow-blue-600/20 dark:shadow-purple-900/20 transition-all duration-300 hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -532,7 +533,7 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
                   <Button 
                     variant="link" 
                     type="button"
-                    className="text-sm text-[#26A69A] hover:text-[#26A69A]/80"
+                    className="text-sm text-white/70 hover:text-white"
                   >
                     Forgot password?
                   </Button>
@@ -541,10 +542,10 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
               
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full border-t border-gray-200" />
+                  <Separator className="w-full border-t border-white/10" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                  <span className="bg-black/30 backdrop-blur-sm px-2 text-white/60">Or continue with</span>
                 </div>
               </div>
               
