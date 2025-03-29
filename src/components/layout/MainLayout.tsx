@@ -76,7 +76,7 @@ const MainLayout = () => {
                     <path d="M26 16L22.2 19.8L18.4 16L22.2 12.2L26 16Z" fill="currentColor" />
                     <path d="M16 26L12.2 22.2L16 18.4L19.8 22.2L16 26Z" fill="currentColor" />
                   </svg>
-                  <h1 className="text-xl font-medium">Citizen Connect</h1>
+                  <h1 className="text-xl font-medium font-poppins tracking-tight">जनConnect</h1>
                 </div>
               </div>
               
@@ -247,7 +247,7 @@ function getPageTitle(path: string): string {
     case "/profile":
       return "User Profile";
     default:
-      return "Citizen Connect";
+      return "जनConnect";
   }
 }
 

@@ -51,7 +51,7 @@ const Index = () => {
     if (!welcomeShown) {
       setTimeout(() => {
         toast({
-          title: "Welcome to Citizen Connect!",
+          title: "Welcome to जनConnect!",
           description: "Empowering citizens to improve their communities through civic engagement.",
           duration: 5000,
         });
@@ -170,13 +170,22 @@ const Index = () => {
           src="https://images.unsplash.com/photo-1497295390343-6ded02d1d283?q=80&w=1500&auto=format&fit=crop"
           alt="City skyline" 
           className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
-          onError={handleBannerImageError}
+          onError={(e) => {
+            console.error("Banner image failed to load");
+            e.currentTarget.classList.add("opacity-0");
+            
+            // Add a fallback background gradient
+            const parent = e.currentTarget.parentElement;
+            if (parent) {
+              parent.classList.add("bg-gradient-to-br", "from-blue-800", "to-blue-600");
+            }
+          }}
         />
         
         <div className="relative p-6 md:p-8">
           <div className="max-w-2xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white tracking-tight">
-              Welcome to Citizen Connect
+              Welcome to जनConnect
             </h1>
             <p className="text-white/90 mb-6 text-base md:text-lg">
               Empowering citizens to report civic issues, track government responses, 
@@ -185,7 +194,21 @@ const Index = () => {
             
             <div className="flex flex-wrap gap-3 mt-4">
               <Button 
-                onClick={handleReportIssue} 
+                onClick={() => {
+                  if (isAuthenticated) {
+                    navigate("/report");
+                  } else {
+                    toast({
+                      title: "Authentication Required",
+                      description: "Please log in to report an issue",
+                      action: (
+                        <Button variant="default" size="sm" onClick={() => navigate("/login")} className="button-effect">
+                          Sign In
+                        </Button>
+                      ),
+                    });
+                  }
+                }} 
                 className="gap-1 shadow-lg hover:shadow-xl transition-all bg-white text-blue-700 hover:bg-white/90 button-effect"
               >
                 <PlusCircle className="mr-1 h-4 w-4" />
@@ -292,7 +315,7 @@ const Index = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>How Citizen Connect Works</DialogTitle>
+              <DialogTitle>How जनConnect Works</DialogTitle>
               <DialogDescription>
                 Your guide to effectively engaging with your local government and community
               </DialogDescription>
@@ -380,7 +403,12 @@ const Index = () => {
             size="sm" 
             variant="outline" 
             className="border-amber-300 text-amber-700 hover:bg-amber-100 button-effect"
-            onClick={() => handleComingSoonFeature("Community Statistics Dashboard")}
+            onClick={() => {
+              toast({
+                title: "Community Statistics Dashboard Coming Soon",
+                description: "This feature is currently under development. Stay tuned!",
+              });
+            }}
           >
             View Stats
           </Button>
