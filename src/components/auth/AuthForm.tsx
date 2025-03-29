@@ -8,8 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import { 
   MapPin, User, Mail, Phone, Lock, ArrowRight, 
   LoaderCircle, Shield, EyeOff, Eye, 
-  MessageSquare, GithubIcon, GoogleIcon, KeyRound
+  MessageSquare, GithubIcon, KeyRound
 } from "lucide-react";
+import GoogleIcon from "@/components/icons/GoogleIcon";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -284,7 +285,7 @@ const AuthForm = ({ initialMode = "login" }: AuthFormProps) => {
             <span className="text-white/80">Verification code expires in:</span>
             <span className="font-medium">{Math.floor((100 - verificationProgress) * 0.3)} seconds</span>
           </div>
-          <Progress value={verificationProgress} className="h-2 bg-white/10" indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500" />
+          <Progress value={verificationProgress} className="h-2 bg-white/10" />
         </div>
       )}
       
