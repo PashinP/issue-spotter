@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Mail, Lock, ArrowRight, 
   LoaderCircle, EyeOff, Eye, 
-  MessageSquare, GithubIcon, KeyRound
+  MessageSquare, GithubIcon, KeyRound,
+  Phone, Shield, User, MapPin
 } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { cn } from "@/lib/utils";
