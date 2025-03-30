@@ -155,24 +155,24 @@ const Login = () => {
                   <TabsList className="grid grid-cols-2 mb-8 bg-white/10 dark:bg-white/5 p-1 rounded-lg">
                     <TabsTrigger 
                       value="login" 
-                      className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-white/15 data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-sm font-medium"
+                      className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-white/15 data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-sm font-medium transition-all duration-300"
                     >
                       Sign In
                     </TabsTrigger>
                     <TabsTrigger 
                       value="register" 
-                      className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-white/15 data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-sm font-medium"
+                      className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-white/15 data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-sm font-medium transition-all duration-300"
                     >
                       Create Account
                     </TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="login">
-                    <AuthForm initialMode="login" />
+                  <TabsContent value="login" className="animate-fade-in">
+                    <AuthForm initialMode="login" darkMode={darkMode} />
                   </TabsContent>
                   
-                  <TabsContent value="register">
-                    <AuthForm initialMode="register" />
+                  <TabsContent value="register" className="animate-fade-in">
+                    <AuthForm initialMode="register" darkMode={darkMode} />
                   </TabsContent>
                 </Tabs>
               </CardContent>
